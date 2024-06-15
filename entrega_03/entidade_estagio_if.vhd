@@ -41,8 +41,8 @@ architecture behavioral of estagio_if is
 		);
 	end component;
 
-	signal PC_if, NPC_if, ri_if, PC_selected, PC_write: std_logic_vector(31 downto 0);
-	signal COP_if --! nao sei como acessar o package type
+	signal PC_if, NPC_if, ri_if, PC_selected, PC_write,PC_plus_4: std_logic_vector(31 downto 0);
+
 	constant halt_addr: std_logic_vector(31 downto 0) := x"00000400";
 	signal data_out : std_logic_vector(31 downto 0);
 
@@ -52,41 +52,44 @@ begin
 			  port map (clock, '0', PC_if, x"00000000", data_out);
 	
 	PC_write <= not id_hd_hazard or not id_Branch_nop;
-	PC_plus_4 <= PC_if + x"00000004";
+	PC_plus_4 <= std_logic_vector(unsigned(PC_if) + 4);
 
-	PROCESS_IF_PC: process (clock, id_hd_hazard, id_Branch_nop, id_PC_Src, id_Jump_PC, keep_simulating)
+	PROCESS_IF_PC: process (clock)
 	begin 
 			if (rising_edge(clock) and PC_write = '1') then 
 				PC_if <= PC_selected;
 			end if;
 	end process;
 	
-	PROCESS_IF_MUX1:
+	PROCESS_IF_MUX1: process(id_PC_Src,id_Jump_PC,PC_plus_4)
+	begin
 			--! confirmar a codificação do pc src
 			if (id_PC_Src = '1') then
-				mux_out <= id_Jump_PC;
+				PC_selected <= id_Jump_PC;
 			elsif (id_PC_Src = '0') then 
-				mux_out <=  PC_plus_4;
+				PC_selected <=  PC_plus_4;
 			end if;
-			--case id_PC_Src is
-			--	when "00" => PC_selected <= NPC_if
-			--	when "01" => PC_selected <= halt_addr
-			--	when "10" or "11" => PC_selected <= id_Jump_PC
-		        --end case;
 
 	end process;
 
-	PROCESS_IF_MUX2:
+	PROCESS_IF_MUX2: process(clock,id_branch_nop,data_out)
+	begin
 		       if (id_Branch_nop='1') then 
-				INSTR_IF <= x"00000000";
+				ri_if <= x"00000000";
 		       else
-                                INSTR_IF <= data_out;
+                                ri_iF <= data_out;
 		       end if;
 	end process;
 	
-	PROCESS_BID:
+	PROCESS_BID: process(clock)
+	begin
 		if (rising_edge(clock)) then
+			BID(63 downto 32) <= PC_if;
+			BID(31 downto  0) <= ri_if;
+	        end if;
+	end process;	
 
 
 
 end behavioral;
+
