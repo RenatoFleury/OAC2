@@ -3,12 +3,10 @@
 ---------------------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_arith.all;
 use ieee.std_logic_signed.all;
+use ieee.numeric_std.all;
 
 library work;
-use work.tipos.all;
-
 
 entity estagio_if is
     generic(
@@ -41,8 +39,8 @@ architecture behavioral of estagio_if is
 		);
 	end component;
 
-	signal PC_if, NPC_if, ri_if, PC_selected, PC_write,PC_plus_4: std_logic_vector(31 downto 0);
-
+	signal PC_if, NPC_if, ri_if, PC_selected, PC_plus_4: std_logic_vector(31 downto 0);
+	signal PC_write: std_logic;
 	constant halt_addr: std_logic_vector(31 downto 0) := x"00000400";
 	signal data_out : std_logic_vector(31 downto 0);
 
