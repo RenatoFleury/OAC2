@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------------------
-------------Módulo RAM para ser utilizado no Cache de instruçoes------------------------------
+------------Modulo RAM para ser utilizado no Cache de instrucoes------------------------------
 ----------------------------------------------------------------------------------------------
 library ieee;
 library std;
@@ -10,19 +10,19 @@ use std.textio.all;
 
 entity ram is
     generic(
-        address_bits	: integer 	:= 32;		  -- Número de biots de endereço da memória
-        size			: integer 	:= 4096;		  -- Tamanho da memória em bytes
-        ram_init_file	: string 	:= "imem.txt" -- Arquivo que contem o conteúdo da memória
+        address_bits	: integer 	:= 32;		  -- Nï¿½mero de biots de endereï¿½o da memï¿½ria
+        size			: integer 	:= 4096;		  -- Tamanho da memï¿½ria em bytes
+        ram_init_file	: string 	:= "imem.txt" -- Arquivo que contem o conteï¿½do da memï¿½ria
     );
     port (
 		-- Entradas
-		clock 	: in  std_logic;								-- Base de tempo, memória síncrona para escrita
-        write 	: in  std_logic;								-- Sinal de escrita na memória
-        address : in  std_logic_vector(address_bits-1 downto 0);-- Entrada de endereço da memória
-        data_in : in  std_logic_vector(address_bits-1 downto 0);-- Entrada de dados na memória
+		clock 	: in  std_logic;								-- Base de tempo, memï¿½ria sï¿½ncrona para escrita
+        write 	: in  std_logic;								-- Sinal de escrita na memï¿½ria
+        address : in  std_logic_vector(address_bits-1 downto 0);-- Entrada de endereï¿½o da memï¿½ria
+        data_in : in  std_logic_vector(address_bits-1 downto 0);-- Entrada de dados na memï¿½ria
 		
-		-- Saída
-        data_out: out std_logic_vector(address_bits-1 downto 0)	-- Saída de dados da memória
+		-- Saï¿½da
+        data_out: out std_logic_vector(address_bits-1 downto 0)	-- Saï¿½da de dados da memï¿½ria
     );
 end entity ram;
 
@@ -30,7 +30,7 @@ architecture ram_arch of ram is
 
     type memory_type is array(size-1 downto 0) of std_logic_vector(7 downto 0);
 
-    --rotina que inicializa conteúdo da ram a partir de um arquivo de texto com binário
+    --rotina que inicializa conteï¿½do da ram a partir de um arquivo de texto com binï¿½rio
     impure function ram_init(file_name: string) return memory_type is
 	
         file file_handle		: text open read_mode is file_name;
@@ -41,7 +41,7 @@ architecture ram_arch of ram is
         variable i				: integer := 0;
 		
     begin
-		-- Lendo o arquivo com o conteúdo da memória
+		-- Lendo o arquivo com o conteï¿½do da memï¿½ria
         while i < 100000 loop
             exit when endfile(file_handle);
             readline(file_handle, current_line);
@@ -53,7 +53,7 @@ architecture ram_arch of ram is
                     current_word(address_bits - 1 - j) := '1';
                 end if;
             end loop;
-			-- Escrevendo byte a byte na memória
+			-- Escrevendo byte a byte na memï¿½ria
             ram_content(i) 		:= current_word(31 downto 24);
             ram_content(i+1) 	:= current_word(23 downto 16);
             ram_content(i+2) 	:= current_word(15 downto 08);
@@ -62,15 +62,15 @@ architecture ram_arch of ram is
         end loop;
         return ram_content;
     end function;
-	-- Declaraç±ao da memória a ser utilizada no projeto
+	-- Declaraï¿½ao da memï¿½ria a ser utilizada no projeto
     signal memory				: memory_type := ram_init(ram_init_file);
     signal address_formatted	: std_logic_vector(11 downto 0);
 	
 begin
 	
-    process(clock) is -- Processo que implementa a memória RAM
+    process(clock) is -- Processo que implementa a memï¿½ria RAM
     begin
-        if rising_edge(clock) then -- As escrita na memória sao sincronizadas com a descida do relógio
+        if rising_edge(clock) then -- As escrita na memï¿½ria sao sincronizadas com a descida do relï¿½gio
             if write = '1' then
                 memory(to_integer(unsigned(address_formatted)))		<=	data_in(31 downto 24);
                 memory(to_integer(unsigned(address_formatted))+1)	<=	data_in(23 downto 16);
@@ -80,13 +80,13 @@ begin
         end if;
     end process;
 	
-	-- A leitura da memória é assíncrona, nao depende do relógio
+	-- A leitura da memï¿½ria ï¿½ assï¿½ncrona, nao depende do relï¿½gio
     data_out(31 downto 24) 	<= memory(to_integer(unsigned(address_formatted)));
     data_out(23 downto 16) 	<= memory(to_integer(unsigned(address_formatted))+1);
     data_out(15 downto 08) 	<= memory(to_integer(unsigned(address_formatted))+2);
     data_out(07 downto 00) 	<= memory(to_integer(unsigned(address_formatted))+3);
 
-    address_formatted <= address(11 downto 0);-- LImitando o tamanho da memória a 12 bits de endereço-4Kbytes
+    address_formatted <= address(11 downto 0);-- LImitando o tamanho da memï¿½ria a 12 bits de endereï¿½o-4Kbytes
 	
 end architecture;
 
