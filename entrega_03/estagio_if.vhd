@@ -45,6 +45,7 @@ architecture behavioral of estagio_if is
 	signal COP_if: instruction_type;
 	constant halt_addr: std_logic_vector(31 downto 0) := x"00000400";
 	signal data_out : std_logic_vector(31 downto 0);
+	signal halt_sig: std_logic:='0';
 
 begin 
 
@@ -53,9 +54,9 @@ begin
 	
 	PC_plus_4 <= std_logic_vector(unsigned(PC_if) + 4);
 	COP_if <= get_instruction_type(ri_if);
-	PROCESS_IF_PC: process (clock,id_PC_Src,id_Jump_PC,id_branch_nop,id_hd_hazard)
-	begin
 
+	PROCESS_IF_PC: process (clock,id_PC_Src,id_Jump_PC,id_branch_nop,id_hd_hazard,PC_plus_4,data_out)
+	begin
 			if (id_PC_Src = '1') then
 				PC_selected <= id_Jump_PC;
 			elsif (id_PC_Src = '0') then 
@@ -69,26 +70,29 @@ begin
 			end if;
 
 			if (rising_edge(clock)) then
-				BID(63 downto 32) <= PC_if;
-				BID(31 downto  0) <= ri_if;
-
-				if (id_hd_hazard = '1' or id_branch_nop = '1') then
+				if (id_hd_hazard = '0') then
+					BID(63 downto 32) <= PC_if;
+					BID(31 downto  0) <= ri_if;
+				end if;
+				
+				if (id_hd_hazard = '1' or halt_sig = '1') then
 					PC_if <= PC_if;
 				else
 					PC_if <= PC_selected;
-				end if;			
+				end if;
 			end if;
-
 	end process;
 
 	simulation_control: process
     begin
-        wait until keep_simulating = False;
-        stop; -- Stops the simulation
-	if (ri_if = x"0000006F") then
-		wait;
-	end if;
+        wait until (ri_if = x"0000006F" and falling_edge(clock)); -- Stops the simulation
+		halt_sig <= '1';
 	end process;
-	
+
+	debuger_control: process
+	begin
+		wait until (keep_simulating = False);
+		stop;
+	end process;
 
 end behavioral;
