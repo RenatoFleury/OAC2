@@ -85,6 +85,9 @@ begin
     begin
         wait until keep_simulating = False;
         stop; -- Stops the simulation
+	if (ri_if = x"0000006F") then
+		wait;
+	end if;
 	end process;
 	
 
