@@ -61,15 +61,15 @@ package body tipos is
 			elsif (func3 = "001" and opcode = "1100011") then ------------------------ VERIFICAR func3
 				instruction_type_return := BNE;    
 			elsif (func3 = "010" and opcode = "1100011") then ------------------------ VERIFICAR func3
-				instruction_type_return := BLT;    
-			elsif (opcode = "1101111") then
-				instruction_type_return := JAL;    
-			elsif (func3 = "000" and opcode = "1100111") then
-				instruction_type_return := JALR;   
-			elsif (instruction=x"00000000" or instruction=x"00001013") then
-				instruction_type_return := NOP;    
+				instruction_type_return := BLT;
 			elsif (instruction=x"0000006f") then
-				instruction_type_return := HALT;								  
+				instruction_type_return := HALT;
+			elsif (opcode = "1101111") then
+				instruction_type_return := JAL;
+			elsif (func3 = "000" and opcode = "1100111") then
+				instruction_type_return := JALR;
+			elsif (instruction=x"00000000" or instruction=x"00001013") then
+				instruction_type_return := NOP;
 			else
 				instruction_type_return := NOINST;
 			end if;
