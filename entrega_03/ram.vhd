@@ -62,6 +62,7 @@ architecture ram_arch of ram is
         end loop;
         return ram_content;
     end function;
+    
 	-- Declara�ao da mem�ria a ser utilizada no projeto
     signal memory				: memory_type := ram_init(ram_init_file);
     signal address_formatted	: std_logic_vector(11 downto 0);
