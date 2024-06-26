@@ -66,7 +66,8 @@ architecture behavioral of estagio_id is
 	signal funct3, AluOp : std_logic_vector(2 downto 0) := (others => '0');
 	signal stallD, ALUSrcD,MemWrite_id,MemRead_id,RegWrite_id : std_logic;
 	signal MemtoReg_id : std_logic_vector(1 downto 0);
-	signal PC_plus4 : std_logic_vector(31 donwto 0);
+	signal PC_plus4 : std_logic_vector(31 downto 0);
+        signal immext : std_logic_vector(31 downto 0);
 	
 
 begin	
@@ -97,10 +98,10 @@ begin
 		case op is
 		when "0110011" =>
 			immext <= (others => '0');
-		        if (funct7 = "00000000" and funct3 = "000") then
+		        if (funct7 = "0000000" and funct3 = "000") then
 				invalid_instr <= '0';
 				AluOP <= "000";
-			elsif (funct7 = "00000000" and funct3 = "010") then
+			elsif (funct7 = "0000000" and funct3 = "010") then
 				invalid_instr <= '0';
 				AluOP <= "010";
 			
@@ -109,14 +110,14 @@ begin
 			end if; 
 			
 		when "0010011" =>
-			if ((funct3 = "000" or funct3 = "010") or ((funct3 = "001 or funct3 = "101") and funct7 = "0000000")) then
+			if (funct3 = "000" or funct3 = "010") then
 				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 				invalid_instr <= '0';
-			elsif  (funct3 = "001  and funct7 = "0000000") then 
+			elsif  (funct3 = "001"  and funct7 = "0000000") then 
 				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 				invalid_instr <= '0';
 				ALUOP <= "011";
-			elsif  (funct3 = "001  and funct7 = "0000000") then 
+			elsif  (funct3 = "001"  and funct7 = "0000000") then 
 				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 				invalid_instr <= '0';
 				ALUOP <= "100";				
@@ -158,6 +159,9 @@ begin
 			 else
 				invalid_instr <= '0';
 			 end if;
+		when others =>
+			 invalid_instr <= '1';
+		end case;
 	end process;
 	
 	-- mesma coisa ano passado?
@@ -201,22 +205,21 @@ begin
 	-- Branch and jump and link
 	
 	process(op) begin
-	case op is
-	when "1100011" =>
+	if (op = "1100011") then
 		if(funct3 = "000" and RA_id = RB_id) then 
-			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + immext);
+			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
-		elsif(funct3 = "001" and RA_id \= RB_id) then
-			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + immext);
+		elsif(funct3 = "001" and not(RA_id = RB_id)) then
+			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
-		elsif(funct3 = "100" and signed(RA_id) < signed(RB_id)) then
-			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + immext);
+		elsif(funct3 = "100" and (signed(RA_id) < signed(RB_id))) then
+			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
 		end if;
-		end if;
+        end if;
 	end process;	
 
 	-- Hazard Detection Unit. Provavelmente vai ser necessário realizar o stall também quando MemRead_mem = '1', pois o forwarding vem de ula_mem.
@@ -229,7 +232,7 @@ begin
 		stallD <= '1';
 	end if;
 
-	end process 
+	end process; 
 	--Forwarding, verificar Páginas 319 e 320. No forwarding da mem, escrever ula_mem ou npc_mem?
 	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem) begin
 		if (ex_fw_A_Branch = "01") then 
@@ -243,7 +246,7 @@ begin
 		end if;
 	end process;
 
-	process(ex_fw_B_Branch, data_out_b,ula_ex,ula_mem)
+	process(ex_fw_B_Branch, data_out_b,ula_ex,ula_mem) begin
 		if (ex_fw_B_Branch = "01") then
 			RB_id <= ula_mem;
 		elsif (ex_fw_A_Branch = "10") then
@@ -256,7 +259,7 @@ begin
 	end process;
 
 	-- Registrador BEX
-	process(clock)
+	process(clock) begin
 	if(rising_edge(clock) and StallD = '0') then
 		BEX <= MemtoReg_id & RegWrite_id & MemWrite_id & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id; 
 	else
