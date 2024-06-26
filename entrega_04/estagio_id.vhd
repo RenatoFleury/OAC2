@@ -224,6 +224,11 @@ begin
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
 		end if;
+	else 
+			id_jump_pc <= x"00000000"; -- checar qual a posição certa de erro
+			id_pc_src <= '0';
+			id_branch_nop <= '0';
+			
         end if;
 	end process;	
 
@@ -235,6 +240,9 @@ begin
 	elsif (MemRead_mem = '1' and (rd_mem = rs1 or rd_mem = rs2)) then
 		id_hd_hazard <= '1';
 		stallD <= '1';
+	else
+		id_hd_hazard <= '0';
+		stallD <= '0';
 	end if;
 
 	end process; 
