@@ -94,7 +94,7 @@ begin
 
 	
 
-	process(op) begin
+	process(BID) begin
 		case op is
 		when "0110011" =>
 			immext <= (others => '0');
@@ -140,7 +140,7 @@ begin
 			if (funct3 = "010") then
 				invalid_instr <= '0';			
 			else
-				invalid_instr <= '0';
+				invalid_instr <= '1';
 			end if;
 		when "1100011" => -- Branch
 			immext <= (31 downto 12 => BID(31)) & BID(7) & BID(30 downto 25) & BID(11 downto 8) & '0';
@@ -157,7 +157,7 @@ begin
 			 if (funct3 = "000") then
 				invalid_instr <= '0';
 			 else
-				invalid_instr <= '0';
+				invalid_instr <= '1';
 			 end if;
 		when others =>
 			 invalid_instr <= '1';
@@ -204,8 +204,13 @@ begin
 	
 	-- Branch and jump and link
 	
-	process(op) begin
-	if (op = "1100011") then
+	process(BID) begin
+	if(invalid_instr = '1') then
+			id_jump_pc <= x"00000400"; -- checar qual a posição certa de erro
+			id_pc_src <= '1';
+			id_branch_nop <= '1';
+	
+	elsif (op = "1100011") then
 		if(funct3 = "000" and RA_id = RB_id) then 
 			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
