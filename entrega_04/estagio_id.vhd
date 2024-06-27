@@ -55,19 +55,20 @@ architecture behavioral of estagio_id is
         data_out_b		: 	out 	std_logic_vector(31 downto 0) 	-- Valor lido pelo endercço rs2
     );
     end component;
-        -- lembrar de inicializar com 0
+        -- lembrar de inicializar com 0 ou valores equivalentes a um NOP
 	signal op : std_logic_vector(6 downto 0) := (others => '0');
 	signal rs1,rs2,rd : std_logic_vector(4 downto 0) := (others => '0'); 
 	signal RA_id,RB_id, data_out_a,data_out_b : std_logic_vector(31 downto 0) := (others => '0'); 
 	signal ImmSrcD : std_logic_vector(2 downto 0) := (others => '0');
-	signal extend_bits: std_logic_vector(31 downto 7);
+	signal extend_bits: std_logic_vector(31 downto 7) := (others => '0');
 	signal invalid_instr : std_logic := '0';
 	signal funct7 : std_logic_vector(6 downto 0) := (others => '0');
 	signal funct3, AluOp : std_logic_vector(2 downto 0) := (others => '0');
-	signal stallD, ALUSrcD,MemWrite_id,MemRead_id,RegWrite_id : std_logic;
-	signal MemtoReg_id : std_logic_vector(1 downto 0);
-	signal PC_plus4 : std_logic_vector(31 downto 0);
-        signal immext : std_logic_vector(31 downto 0);
+	signal stallD, ALUSrcD,MemWrite_id,MemRead_id,RegWrite_id : std_logic := '0';
+	signal MemtoReg_id : std_logic_vector(1 downto 0) := (others => '0');
+	signal PC_plus4 : std_logic_vector(31 downto 0) := (others => '0');
+        signal immext : std_logic_vector(31 downto 0) := (others => '0');
+	signal is_jal : std_logic;
 	
 
 begin	
@@ -79,6 +80,9 @@ begin
 	funct3 <= BID(14 downto 12);
 	rd  <= BID(11 downto 7);
 	op <= BID(6 downto 0);
+
+	rs1_id_ex <= rs1;
+	rs2_id_ex <= BID(24 downto 20);
 
         COP_ID <= get_instruction_type(BID(31 downto 0));
 	--Instanciação da Memória
@@ -94,9 +98,10 @@ begin
 
 	
 
-	process(BID) begin
+	process(BID,op,funct3,funct7) begin
 		case op is
-		when "0110011" =>
+		when "0110011" => --R type
+
 			immext <= (others => '0');
 		        if (funct7 = "0000000" and funct3 = "000") then
 				invalid_instr <= '0';
@@ -109,18 +114,30 @@ begin
 				invalid_instr <= '1';
 			end if; 
 			
-		when "0010011" =>
-			if (funct3 = "000" or funct3 = "010") then
+		when "0010011" => --I type
+			if (funct3 = "000") then
 				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 				invalid_instr <= '0';
+				AluOP <= "000";
+			elsif(funct3 = "010") then
+				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
+				invalid_instr <= '0';
+				AluOP <= "101";	
+
 			elsif  (funct3 = "001"  and funct7 = "0000000") then 
 				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 				invalid_instr <= '0';
-				ALUOP <= "011";
+				ALUOP <= "011"; 
+
 			elsif  (funct3 = "001"  and funct7 = "0000000") then 
 				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 				invalid_instr <= '0';
-				ALUOP <= "100";				
+				if(BID(31 downto 0) = x"00001013") then
+					ALUOP <= "000";
+				else
+					ALUOP <= "100";
+				end if;		
+		
 			elsif (funct3 = "101" and funct7 = "0100000") then
 				immext <= (31 downto 5 => BID(24)) & BID(24 downto 20); -- Checar isso
 				invalid_instr <= '0';
@@ -128,14 +145,16 @@ begin
 			else
 				invalid_instr <= '1';
 			end if;
-		when "0000011" =>	
+		when "0000011" =>	--lw
+
 			immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 			if (funct3 = "010") then
 				invalid_instr <= '0';
 			else
 				invalid_instr <= '1';
 			end if;
-		when "0100011" =>
+		when "0100011" => -- sw
+
 			immext <= (31 downto 12 => BID(31)) & BID(31 downto 25) & BID(11 downto 7);
 			if (funct3 = "010") then
 				invalid_instr <= '0';			
@@ -143,6 +162,7 @@ begin
 				invalid_instr <= '1';
 			end if;
 		when "1100011" => -- Branch
+
 			immext <= (31 downto 12 => BID(31)) & BID(7) & BID(30 downto 25) & BID(11 downto 8) & '0';
 			if (funct3 = "000" or funct3 = "001" or funct3 = "100") then -- beq, bne, blt
 		      		invalid_instr <= '0';
@@ -152,6 +172,7 @@ begin
 		when "1101111" => -- Branch and link
 			 immext <= (31 downto 20 => BID(31)) & BID(19 downto 12) & BID(20) & BID(30 downto 21) & '0';
 			 invalid_instr <= '0';
+			 is_jal <= '1';
 		when "1100111" => -- Jalr
 			 immext <= (31 downto 13 => BID(31)) & BID(31 downto 20) & '0';
 			 if (funct3 = "000") then
@@ -159,8 +180,14 @@ begin
 			 else
 				invalid_instr <= '1';
 			 end if;
+		when "0000000" => -- kind of nop
+			 immext <= (others => '0');
+			 if (BID(31 downto 0) = x"00000000") then
+				invalid_instr <= '0';
+			 end if;
 		when others =>
 			 invalid_instr <= '1';
+
 		end case;
 	end process;
 	
@@ -173,7 +200,7 @@ begin
                    '1' when "0010011", --I type
                    '0' when "1101111", --jal
 		   '1' when "1100111", --jalr
-                   '0' when others;
+		   '0' when others;
    	with op select 
         RegWrite_id <= '1' when "0000011", --lw
                    '0' when "0100011", --sw
@@ -204,7 +231,7 @@ begin
 	
 	-- Branch and jump and link
 	
-	process(BID) begin
+	process(BID,op,immext) begin
 	if(invalid_instr = '1') then
 			id_jump_pc <= x"00000400"; -- checar qual a posição certa de erro
 			id_pc_src <= '1';
@@ -223,7 +250,15 @@ begin
 			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
+		else 
+			id_jump_pc <= x"00000000"; -- checar qual a posição certa de erro
+			id_pc_src <= '0';
+			id_branch_nop <= '0';
 		end if;
+	elsif(op = "1101111") then
+		id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
+		id_PC_src <= '1';
+		id_branch_nop <= '1';
 	else 
 			id_jump_pc <= x"00000000"; -- checar qual a posição certa de erro
 			id_pc_src <= '0';
