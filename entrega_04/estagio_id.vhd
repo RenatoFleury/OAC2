@@ -33,7 +33,7 @@ entity estagio_id is
 	rs1_id_ex      : out std_logic_vector(004 downto 0);	                  -- Endereço rs1 no estágio id
 	rs2_id_ex			 : out std_logic_vector(004 downto 0);	                  -- Endereço rs2 no estágio id
 	BEX					   : out std_logic_vector(151 downto 0) := (others => '0'); -- Saída do ID > EX
-	COP_id				 : out instruction_type  := NOP;		                      -- Instrucao no estagio id
+	COP_id				 : out instruction_type := NOP;		                      -- Instrucao no estagio id
 	COP_ex				 : out instruction_type := NOP			                      -- Instruçao no estágio id passada> EX
 	);
 end entity;
@@ -70,16 +70,14 @@ architecture behavioral of estagio_id is
 	signal funct7        : std_logic_vector(6 downto 0)  := (others => '0');
 	signal funct3        : std_logic_vector(2 downto 0)  := (others => '0');
 
-	signal ImmSrcD       : std_logic_vector(2 downto 0)  := (others => '0');
-	signal extend_bits   : std_logic_vector(31 downto 7) := (others => '0');
 	signal invalid_instr : std_logic := '0';
-	signal AluOp         : std_logic_vector(2 downto 0)  := (others => '0');
-	signal stallD        : std_logic := '0';
-	signal ALUSrcD       : std_logic := '0';
-	signal MemWrite_id   : std_logic := '0';
-	signal MemRead_id    : std_logic := '0';
 	signal RegWrite_id   : std_logic := '0';
 	signal MemtoReg_id   : std_logic_vector(1 downto 0)  := (others => '0');
+	signal MemWrite_id   : std_logic := '0';
+	signal ALUSrcD       : std_logic := '0';
+	signal AluOp         : std_logic_vector(2 downto 0)  := (others => '0');
+	signal MemRead_id    : std_logic := '0';
+	signal stallD        : std_logic := '0';
 
 	signal PC_plus4      : std_logic_vector(31 downto 0) := (others => '0');
 	signal immext        : std_logic_vector(31 downto 0) := (others => '0');
@@ -249,7 +247,7 @@ begin
 	
 	-- Branch and jump and link
 	
-	process(BID,op,immext) begin
+	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr)
 	if(invalid_instr = '1') then
 			id_jump_pc <= x"00000400"; -- checar qual a posição certa de erro
 			id_pc_src <= '1';
@@ -260,11 +258,11 @@ begin
 			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
-		elsif(funct3 = "001" and not(RA_id = RB_id)) then
+		elsif(funct3 = "001" and not(to_integer(signed(RA_id)) = to_integer(signed(RB_id)))) then
 			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
-		elsif(funct3 = "100" and (signed(RA_id) < signed(RB_id))) then
+		elsif(funct3 = "100" and (to_integer(signed(RA_id)) < to_integer(signed(RB_id)))) then
 			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
@@ -326,11 +324,17 @@ begin
 
 	-- Registrador BEX
 	process(clock) begin
-	if(rising_edge(clock) and StallD = '0') then
+		if(rising_edge(clock) and StallD = '1') then
+
+			BEX <= BEX(151 downto 150) & '0' & BEX(148 downto 0);  
+	
+			instrEx<= InstrEx;
+	
+		elsif(rising_edge(clock) and StallD = '0') then
 		BEX <= MemtoReg_id & RegWrite_id & MemWrite_id & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id; 
 		instrEx<= BID(31 downto 0);
 	else
-		BEX <= (others => '0');
+		BEX <= BEX;
 		instrEx<=InstrEx;
 	end if;
 	end process;
