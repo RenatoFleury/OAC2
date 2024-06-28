@@ -322,15 +322,12 @@ begin
 		end if;
 	end process;
 
-	-- Registrador BEX
+	-- Registrador BEX 
 	process(clock) begin
-		if(rising_edge(clock) and StallD = '1') then
-
-			BEX <= BEX(151 downto 150) & '0' & BEX(148 downto 0);  
-	
-			instrEx<= InstrEx;
-	
-		elsif(rising_edge(clock) and StallD = '0') then
+	if(rising_edge(clock) and StallD = '1') then
+		BEX <= BEX(151 downto 150) & '0' & BEX(148 downto 0);  
+		instrEx<= InstrEx;
+	elsif(rising_edge(clock) and StallD = '0') then
 		BEX <= MemtoReg_id & RegWrite_id & MemWrite_id & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id; 
 		instrEx<= BID(31 downto 0);
 	else

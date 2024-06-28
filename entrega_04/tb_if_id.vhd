@@ -24,14 +24,14 @@ architecture tb_fd_if_id_arch2 of tb_fd_if_id is
         port(
 			--Entradas
 			clock			: in 	std_logic;	-- Base de tempo vinda da bancada de teste
-        	id_hd_hazard	: in 	std_logic;	-- Sinal de controle que carrega 0's na parte do RI do registrador de saÌda do if_stage
-			id_Branch_nop	: in 	std_logic;	-- Sinal que indica inser4Áao de NP devido a desviou pulo
-			id_PC_Src		: in 	std_logic;	-- SeleÁao do mux da entrada do PC
-			id_Jump_PC		: in 	std_logic_vector(31 downto 0) := x"00000000";			-- EndereÁo do Jump ou desvio realizado
+        	id_hd_hazard	: in 	std_logic;	-- Sinal de controle que carrega 0's na parte do RI do registrador de sa√≠da do if_stage
+			id_Branch_nop	: in 	std_logic;	-- Sinal que indica inser4√ßao de NP devido a desviou pulo
+			id_PC_Src		: in 	std_logic;	-- Sele√ßao do mux da entrada do PC
+			id_Jump_PC		: in 	std_logic_vector(31 downto 0) := x"00000000";			-- Endere√ßo do Jump ou desvio realizado
 			keep_simulating	: in	Boolean := True;
 			
-			-- SaÌda
-        	BID				: out 	std_logic_vector(63 downto 0) := x"0000000000000000"	--Registrador de saÌda do if_stage-if_id
+			-- Sa√≠da
+        	BID				: out 	std_logic_vector(63 downto 0) := x"0000000000000000"	--Registrador de sa√≠da do if_stage-if_id
         );
     end component;
 
@@ -39,58 +39,58 @@ architecture tb_fd_if_id_arch2 of tb_fd_if_id is
         port(
 			-- Entradas
 			clock				: in 	std_logic; 						-- Base de tempo vindo da bancada de teste
-			BID					: in 	std_logic_vector(063 downto 0);	-- InformaÁoes vindas est·gio Busca
-			MemRead_ex			: in	std_logic;						-- Sinal de leitura de memÛria no estagio ex
-			rd_ex				: in	std_logic_vector(004 downto 0);	-- EndereÁo de destino noa regs. no est·gio ex
-			ula_ex				: in 	std_logic_vector(031 downto 0);	-- SaÌda da ULA no est·gio Ex
-			MemRead_mem			: in	std_logic;						-- Sinal de leitura na memÛria no est·gio mem
+			BID					: in 	std_logic_vector(063 downto 0);	-- Informa√ßoes vindas est√°gio Busca
+			MemRead_ex			: in	std_logic;						-- Sinal de leitura de mem√≥ria no estagio ex
+			rd_ex				: in	std_logic_vector(004 downto 0);	-- Endere√ßo de destino noa regs. no est√°gio ex
+			ula_ex				: in 	std_logic_vector(031 downto 0);	-- Sa√≠da da ULA no est√°gio Ex
+			MemRead_mem			: in	std_logic;						-- Sinal de leitura na mem√≥ria no est√°gio mem
 			rd_mem				: in	std_logic_vector(004 downto 0);	-- Endere'co de escrita nos regs. no est'agio mem
-			ula_mem				: in 	std_logic_vector(031 downto 0);	-- SaÌda da ULA no est·gio Mem 
+			ula_mem				: in 	std_logic_vector(031 downto 0);	-- Sa√≠da da ULA no est√°gio Mem 
 			NPC_mem				: in	std_logic_vector(031 downto 0); -- Valor do NPC no estagio mem
         	RegWrite_wb			: in 	std_logic; 						-- Sinal de escrita no RegFile vindo de wb
         	writedata_wb		: in 	std_logic_vector(031 downto 0);	-- Valor a ser escrito no RegFile vindo de wb
-        	rd_wb				: in 	std_logic_vector(004 downto 0);	-- EndereÁo do registrador escrito
-        	ex_fw_A_Branch		: in 	std_logic_vector(001 downto 0);	-- SeleÁao de Branch forwardA vindo de forward
-        	ex_fw_B_Branch		: in 	std_logic_vector(001 downto 0);	-- SeleÁao de Branch forwardB vindo de forward
+        	rd_wb				: in 	std_logic_vector(004 downto 0);	-- Endere√ßo do registrador escrito
+        	ex_fw_A_Branch		: in 	std_logic_vector(001 downto 0);	-- Sele√ßao de Branch forwardA vindo de forward
+        	ex_fw_B_Branch		: in 	std_logic_vector(001 downto 0);	-- Sele√ßao de Branch forwardB vindo de forward
 		
-			-- SaÌdas
-			id_Jump_PC			: out	std_logic_vector(031 downto 0) := x"00000000";		-- EndereÁo destino do JUmp ou Desvio
+			-- Sa√≠das
+			id_Jump_PC			: out	std_logic_vector(031 downto 0) := x"00000000";		-- Endere√ßo destino do JUmp ou Desvio
 			id_PC_src			: out	std_logic := '0';				-- Seleciona a entrado do PC
 			id_hd_hazard		: out	std_logic := '0';				-- Sinal que preserva o if_id e nao incrementa o PC
-			id_Branch_nop		: out	std_logic := '0';				-- Sinaliza a inserÁao de um NOP devido ao Branch. limpa o if_id.ri
-			rs1_id_ex			: out	std_logic_vector(004 downto 0);	-- EndereÁo rs1 no est·gio id
-			rs2_id_ex			: out	std_logic_vector(004 downto 0);	-- EndereÁo rs2 no est·gio id
-			BEX					: out 	std_logic_vector(151 downto 0) := (others => '0'); 	-- SaÌda do ID para o EX
+			id_Branch_nop		: out	std_logic := '0';				-- Sinaliza a inser√ßao de um NOP devido ao Branch. limpa o if_id.ri
+			rs1_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere√ßo rs1 no est√°gio id
+			rs2_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere√ßo rs2 no est√°gio id
+			BEX					: out 	std_logic_vector(151 downto 0) := (others => '0'); 	-- Sa√≠da do ID para o EX
 			COP_id				: out	instruction_type  := NOP;							-- Instrucao no estagio id
-			COP_ex				: out 	instruction_type := NOP								-- InstruÁao no est·gio id passada para EX
+			COP_ex				: out 	instruction_type := NOP								-- Instru√ßao no est√°gio id passada para EX
         );
     end component;
 
-	-- PerÌodo do relÛgio do Pipeline
+	-- Per√≠odo do rel√≥gio do Pipeline
 	constant clock_period: time := 10 ns; 
 	
-	-- Sinais internos para conexao das portas do est·gio IF
+	-- Sinais internos para conexao das portas do est√°gio IF
 	signal		clock			: std_logic := '1';	-- Base de tempo vinda da bancada de teste
-    signal    	id_hd_hazard	: std_logic;		-- Sinal de controle que carrega 0's na parte do RI do registrador de saÌda do if_stage
-	signal		id_PC_Src		: std_logic;		-- SeleÁao do mux da entrada do PC
-	signal		id_Jump_PC		: std_logic_vector(31 downto 0) := x"00000000";		-- EndereÁo do Jump ou desvio realizado
-	signal		BID				: std_logic_vector(63 downto 0) := x"0000000000000000";--Registrador de saÌda do if_stage-if_id clock 
-	signal		Keep_simulating	: boolean := true;	-- Continue a simulaÁao
+    signal    	id_hd_hazard	: std_logic;		-- Sinal de controle que carrega 0's na parte do RI do registrador de sa√≠da do if_stage
+	signal		id_PC_Src		: std_logic;		-- Sele√ßao do mux da entrada do PC
+	signal		id_Jump_PC		: std_logic_vector(31 downto 0) := x"00000000";		-- Endere√ßo do Jump ou desvio realizado
+	signal		BID				: std_logic_vector(63 downto 0) := x"0000000000000000";--Registrador de sa√≠da do if_stage-if_id clock 
+	signal		Keep_simulating	: boolean := true;	-- Continue a simula√ßao
 	
 	
-	-- Sinais internos para conexao das portas do est·gio ID
+	-- Sinais internos para conexao das portas do est√°gio ID
 	--Entradas
-	signal	MemRead_ex		: std_logic;						-- Sinal de leitura de memÛria no estagio ex
-	--signal	RegWrite_ex		: std_logic;						-- Sinal de escrita nos regs. no est·gio ex
-	signal	rd_ex			: std_logic_vector(004 downto 0);	-- EndereÁo de destino nos regs. no est·gio ex
-	signal	ula_ex			: std_logic_vector(031 downto 0);	-- SaÌda da ULA no est·gio Ex
-	signal	MemRead_mem		: std_logic;						-- Sinal de leitura na memÛria no est·gio mem
-	signal	ula_mem			: std_logic_vector(031 downto 0);	-- SaÌda da ULA no est·gio Mem 
+	signal	MemRead_ex		: std_logic;						-- Sinal de leitura de mem√≥ria no estagio ex
+	--signal	RegWrite_ex		: std_logic;						-- Sinal de escrita nos regs. no est√°gio ex
+	signal	rd_ex			: std_logic_vector(004 downto 0);	-- Endere√ßo de destino nos regs. no est√°gio ex
+	signal	ula_ex			: std_logic_vector(031 downto 0);	-- Sa√≠da da ULA no est√°gio Ex
+	signal	MemRead_mem		: std_logic;						-- Sinal de leitura na mem√≥ria no est√°gio mem
+	signal	ula_mem			: std_logic_vector(031 downto 0);	-- Sa√≠da da ULA no est√°gio Mem 
     signal  RegWrite_wb		: std_logic; 						-- Sinal de escrita no RegFile vindo de wb
     signal  writedata_wb	: std_logic_vector(031 downto 0);	-- Valor a ser escrito no RegFile vindo de wb
-    signal  rd_wb			: std_logic_vector(004 downto 0);	-- EndereÁo do registrador escrito
-    signal  ex_fw_A_Branch	: std_logic_vector(001 downto 0);	-- SeleÁao de Branch forwardA vindo de forward
-    signal  ex_fw_B_Branch	: std_logic_vector(001 downto 0);	-- SeleÁao de Branch forwardB vindo de forward 
+    signal  rd_wb			: std_logic_vector(004 downto 0);	-- Endere√ßo do registrador escrito
+    signal  ex_fw_A_Branch	: std_logic_vector(001 downto 0);	-- Sele√ßao de Branch forwardA vindo de forward
+    signal  ex_fw_B_Branch	: std_logic_vector(001 downto 0);	-- Sele√ßao de Branch forwardB vindo de forward 
 	signal	rd_mem			: std_logic_vector(04 downto 0); 
 	signal	NPC_mem			: std_logic_vector(31 downto 0);
 	signal	id_Branch_nop	: std_logic; 
@@ -98,11 +98,11 @@ architecture tb_fd_if_id_arch2 of tb_fd_if_id is
 	signal	rs2_id_ex		: std_logic_vector(04 downto 0);
 	signal	COP_id			: instruction_type;
 	 
-			-- SaÌdas
-	signal	BEX				: std_logic_vector(151 downto 0) := (others => '0'); 	-- SaÌda do ID para o EX
-	signal	COP_ex			: instruction_type := NOP;						  		-- InstruÁao no est·gio id passada para EX
+			-- Sa√≠das
+	signal	BEX				: std_logic_vector(151 downto 0) := (others => '0'); 	-- Sa√≠da do ID para o EX
+	signal	COP_ex			: instruction_type := NOP;						  		-- Instru√ßao no est√°gio id passada para EX
 	
-	--	Mostrando a alocaÁ±ao dos sinais no buffer de saÌda  id - BEX
+	--	Mostrando a aloca√ß¬±ao dos sinais no buffer de sa√≠da  id - BEX
 
 alias MemToReg 	is BEX(151 downto 150);
 alias RegWrite 	is BEX(149);
@@ -134,51 +134,51 @@ begin
         port map(
 			--Entradas
 			clock			=> clock,			-- Base de tempo vinda da bancada de teste
-        	id_hd_hazard	=> id_hd_hazard,	-- Sinal de controle que carrega 0's na parte do RI do registrador de saÌda do if_stage
-			id_Branch_nop	=> id_Branch_nop,	-- Sinal que indica inser4Áao de NP devido a desviou pulo
-			id_PC_Src		=> id_PC_Src,		-- SeleÁao do mux da entrada do PC
-			id_Jump_PC		=> id_Jump_PC,		-- EndereÁo do Jump ou desvio realizado
-			keep_simulating	=> keep_simulating,	-- Continue a simulaÁao
+        	id_hd_hazard	=> id_hd_hazard,	-- Sinal de controle que carrega 0's na parte do RI do registrador de sa√≠da do if_stage
+			id_Branch_nop	=> id_Branch_nop,	-- Sinal que indica inser4√ßao de NP devido a desviou pulo
+			id_PC_Src		=> id_PC_Src,		-- Sele√ßao do mux da entrada do PC
+			id_Jump_PC		=> id_Jump_PC,		-- Endere√ßo do Jump ou desvio realizado
+			keep_simulating	=> keep_simulating,	-- Continue a simula√ßao
 			
-			-- SaÌda
-        	BID				=> BID				--Registrador de saÌda do if_stage-if_id
+			-- Sa√≠da
+        	BID				=> BID				--Registrador de sa√≠da do if_stage-if_id
         );
 
     decode : estagio_id 
         port map(
             -- Entradas
 		clock				=> clock,			-- Base de tempo vindo da bancada de teste
-		BID					=> BID,				-- InformaÁoes vindas est·gio Busca
-		MemRead_ex			=> MemRead_ex,		-- Sinal de leitura de memÛria no estagio ex
-		rd_ex				=> rd_ex,			-- EndereÁo de destino noa regs. no est·gio ex
-		ula_ex				=> ula_ex,			-- SaÌda da ULA no est·gio Ex
-		MemRead_mem			=> MemRead_mem,		-- Sinal de leitura na memÛria no est·gio mem
+		BID					=> BID,				-- Informa√ßoes vindas est√°gio Busca
+		MemRead_ex			=> MemRead_ex,		-- Sinal de leitura de mem√≥ria no estagio ex
+		rd_ex				=> rd_ex,			-- Endere√ßo de destino noa regs. no est√°gio ex
+		ula_ex				=> ula_ex,			-- Sa√≠da da ULA no est√°gio Ex
+		MemRead_mem			=> MemRead_mem,		-- Sinal de leitura na mem√≥ria no est√°gio mem
 		rd_mem				=> rd_mem,			-- Endereco de escrita nos regs. no estagio mem
-		ula_mem				=> ula_mem,			-- SaÌda da ULA no est·gio Mem 
+		ula_mem				=> ula_mem,			-- Sa√≠da da ULA no est√°gio Mem 
 		NPC_mem				=> NPC_mem, 		-- Valor do NPC no estagio mem
         RegWrite_wb			=> RegWrite_wb, 	-- Sinal de escrita no RegFile vindo de wb
         writedata_wb		=> writedata_wb,	-- Valor a ser escrito no RegFile vindo de wb
-        rd_wb				=> rd_wb,			-- EndereÁo do registrador escrito
-        ex_fw_A_Branch		=> ex_fw_A_Branch,	-- SeleÁao de Branch forwardA vindo de forward
-        ex_fw_B_Branch		=> ex_fw_B_Branch,	-- SeleÁao de Branch forwardB vindo de forward
+        rd_wb				=> rd_wb,			-- Endere√ßo do registrador escrito
+        ex_fw_A_Branch		=> ex_fw_A_Branch,	-- Sele√ßao de Branch forwardA vindo de forward
+        ex_fw_B_Branch		=> ex_fw_B_Branch,	-- Sele√ßao de Branch forwardB vindo de forward
 		
-		-- SaÌdas
-		id_Jump_PC			=> id_Jump_PC, 		-- EndereÁo destino do JUmp ou Desvio
+		-- Sa√≠das
+		id_Jump_PC			=> id_Jump_PC, 		-- Endere√ßo destino do JUmp ou Desvio
 		id_PC_src			=> id_PC_src,		-- Seleciona a entrado do PC
 		id_hd_hazard		=> id_hd_hazard,	-- Sinal que preserva o if_id e nao incrementa o PC
-		id_Branch_nop		=> id_Branch_nop,	-- Sinaliza a inserÁao de um NOP devido ao Branch. limpa o if_id.ri
-		rs1_id_ex			=> rs1_id_ex,		-- EndereÁo rs1 no est·gio id
-		rs2_id_ex			=> rs2_id_ex,		-- EndereÁo rs2 no est·gio id
-		BEX					=> BEX, 			-- SaÌda do ID para o EX
+		id_Branch_nop		=> id_Branch_nop,	-- Sinaliza a inser√ßao de um NOP devido ao Branch. limpa o if_id.ri
+		rs1_id_ex			=> rs1_id_ex,		-- Endere√ßo rs1 no est√°gio id
+		rs2_id_ex			=> rs2_id_ex,		-- Endere√ßo rs2 no est√°gio id
+		BEX					=> BEX, 			-- Sa√≠da do ID para o EX
 		COP_id				=> COP_id,			-- Instrucao no estagio id
-		COP_ex				=> COP_ex			-- InstruÁao no est·gio id passada para EX
+		COP_ex				=> COP_ex			-- Instru√ßao no est√°gio id passada para EX
         );
 
 
 	clock <= not clock after clock_period / 2;
 
     process(clock) 
-	variable count: integer := 0; 
+	variable count: integer := -1; 
 	variable fstatus       :file_open_status;
 	variable file_line     :line;
 	
@@ -190,7 +190,7 @@ begin
 		   case count is  
 
 				
-			   when 0 => 		--Teste da primeira instruÁ„o do programa swap: addi,a0,zero,0 ==> 10 ns
+			   when 0 => 		--Teste da primeira instru√ß√£o do programa swap: addi,a0,zero,0 ==> 10 ns
 			   				MemRead_ex 		<= '0';
 							rd_ex			<= "00000";
 							--RegWrite_ex 	<= '0';
@@ -212,12 +212,12 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE1: primeira instruÁ„o: Verificando leitura de RA" severity note;
-							write(file_line, string'("TESTE1: primeira instruÁ„o: Verificando leitura de RA"), left, 5);			
+							report "TESTE1: primeira instru√ß√£o: Verificando leitura de RA" severity note;
+							write(file_line, string'("TESTE1: primeira instru√ß√£o: Verificando leitura de RA"), left, 5);			
 							writeline(fptr, file_line);
 							if RA = x"00000000" then
-								report "Teste 1: primeira instruÁ„o ==> EST¡ CORRETO" severity warning;
-								write(file_line, string'("Teste 1: primeira instruÁ„o ==> EST¡ CORRETO"), left, 5);
+								report "Teste 1: primeira instru√ß√£o ==> EST√Å CORRETO" severity warning;
+								write(file_line, string'("Teste 1: primeira instru√ß√£o ==> EST√Å CORRETO"), left, 5);
 								writeline(fptr, file_line);
 							end if;
 							assert RA = x"00000000" severity error;
@@ -229,12 +229,12 @@ begin
 							report "=================================================================================  " severity warning;
 							
 							
-        					report "TESTE 2: primeira instruÁ„o: Verificando leitura de RB" severity note;
-							write(file_line, string'("TESTE 2: primeira instruÁ„o: Verificando leitura de RB"), left, 5);
+        					report "TESTE 2: primeira instru√ß√£o: Verificando leitura de RB" severity note;
+							write(file_line, string'("TESTE 2: primeira instru√ß√£o: Verificando leitura de RB"), left, 5);
 							writeline(fptr, file_line);
 							if RB = x"00000000" then
-								report "Teste 2: primeira instruÁ„o ==>  EST¡ CORRETO" severity warning;
-								write(file_line, string'("Teste 2: primeira instruÁ„o ==>  EST¡ CORRETO"), left, 5);
+								report "Teste 2: primeira instru√ß√£o ==>  EST√Å CORRETO" severity warning;
+								write(file_line, string'("Teste 2: primeira instru√ß√£o ==>  EST√Å CORRETO"), left, 5);
 								writeline(fptr, file_line);
 							end if;
 							assert RB = x"00000000" severity error;
@@ -245,41 +245,41 @@ begin
 							writeline(fptr, file_line);
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3: primeira instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: primeira instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000000" then
-								report "Teste 3: primeira instrucao ==> EST¡ CORRETO" severity warning;
+								report "Teste 3: primeira instrucao ==> EST√Å CORRETO" severity warning;
 							end if;
 							assert Imed = x"00000000" severity error;
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-			   				report "TESTE 4: primeira instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 10 ns" severity note;
+			   				report "TESTE 4: primeira instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 10 ns" severity note;
 							if PC_id = x"00000000" then
-							report "Teste 4: primeira instruÁ„o ==> EST¡ CORRETO" severity warning;
+							report "Teste 4: primeira instru√ß√£o ==> EST√Å CORRETO" severity warning;
 							end if;
 							assert PC_id = x"00000000" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-        					report "TESTE 5: primeira instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+        					report "TESTE 5: primeira instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "00000" then  -- 
-								report "Teste 5: primeira instruÁ„o ==> EST¡ CORRETO" severity warning;
+								report "Teste 5: primeira instru√ß√£o ==> EST√Å CORRETO" severity warning;
 							end if;
 							assert reg_rs1 = "00000" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-        					report "TESTE 6: primeira instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+        					report "TESTE 6: primeira instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00000" then
-								report "Teste 6: primeira instrucao ==> EST¡ CORRETO" severity warning;
+								report "Teste 6: primeira instrucao ==> EST√Å CORRETO" severity warning;
 							end if;
 							assert reg_rs2 = "00000" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-        					report "TESTE 7: primeira instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+        					report "TESTE 7: primeira instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00000" then
-								report "Teste 7: primeira instruÁ„o ==> EST¡ CORRETO" severity warning;
+								report "Teste 7: primeira instru√ß√£o ==> EST√Å CORRETO" severity warning;
 							end if;
 							assert reg_rd  = "00000" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -291,15 +291,15 @@ begin
 							
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "000000000"then
-								report "Teste 8: primeira instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "Teste 8: primeira instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: primeira instruÁ„o Sinais de controle ==> EST√0 ERRADOS severity error";
+								report "Teste 8: primeira instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS severity error";
 							end if;
 							assert BEX(151 downto 143) = "000000000" severity error;
 							report "#################################################################################  " severity warning;
 							report "#################################################################################  " severity warning;
 												
-				when 1 => 	--Teste da segunda instruÁ„o do programa swap: addi,a1,zero,3 ==> 20 ns
+				when 1 => 	--Teste da segunda instru√ß√£o do programa swap: addi,a1,zero,3 ==> 20 ns
 							MemRead_ex 		<= '0';
 							rd_ex			<= "00000";	
 							--rs2_id_ex		<= "00000";
@@ -308,57 +308,57 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: segunda instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: segunda instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da segunda instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da segunda instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: segunda instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: segunda instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da segunda instruÁ„o est· correto" severity warning;
+								report "Teste 2: da segunda instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3 segunda instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3 segunda instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000000" then
-								report "Teste 3 da segunda instruÁ„o est· correto" severity warning;
+								report "Teste 3 da segunda instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert Imed = x"00000000" severity error;
 							report "Imed = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: segunda instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 20 ns" severity note;     
+							report "TESTE 4: segunda instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 20 ns" severity note;     
 							if PC_id = x"00000004" then                       
-								report "Teste 4: da segunda instruÁ„o est· correto" severity warning;                               
+								report "Teste 4: da segunda instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"00000004" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: segunda instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: segunda instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "00000" then  -- 
-								report "Teste 5: da segunda instruÁ„o est· correto" severity warning;
+								report "Teste 5: da segunda instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "00000" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6 segunda instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6 segunda instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00000" then
-								report "Teste 6 da segunda instruÁ„o est· correto" severity warning;
+								report "Teste 6 da segunda instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00000" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7 segunda instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7 segunda instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00000" then
-								report "Teste 7 da segunda instruÁ„o est· correto" severity warning;
+								report "Teste 7 da segunda instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "00000" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -369,9 +369,9 @@ begin
 							report "#################################################################################  " severity warning;
 							
 							if BEX(151 downto 143) = "000000000"then
-								report "TESTE 8: segunda instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: segunda instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: segunda instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: segunda instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "000000000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -379,7 +379,7 @@ begin
 							report "#################################################################################  " severity warning;
 							
 							
-				when 2 => 	--Teste da terceira instruÁ„o do programa swap: slli,t0,a1,2	==> 30 ns
+				when 2 => 	--Teste da terceira instru√ß√£o do programa swap: slli,t0,a1,2	==> 30 ns
 							MemRead_ex 		<= '0';
 							rd_ex			<= "01010";	
 							rd_mem			<= "00001";
@@ -387,59 +387,59 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: terceira instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: terceira instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da terceira instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da terceira instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: terceira instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: terceira instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da terceira instruÁ„o est· correto" severity warning;
+								report "Teste 2: da terceira instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 						    report "=================================================================================  " severity warning;
 						   	
-							report "TESTE 3: terceira instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: terceira instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000008" then
-								report "Teste 3: da terceira instruÁ„o est· correto" severity warning;
+								report "Teste 3: da terceira instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert Imed = x"00000008" severity error;
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: terceira instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 30 ns" severity note;     
+							report "TESTE 4: terceira instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 30 ns" severity note;     
 							if PC_id = x"00000004" then                       
-								report "Teste 4: da terceira instruÁ„o est· correto" severity warning;                               
+								report "Teste 4: da terceira instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"00000004" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: terceira instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: terceira instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "00000" then  -- 
-								report "Teste 5: da terceira instruÁ„o est· correto" severity warning;
+								report "Teste 5: da terceira instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "00000" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6: terceira instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6: terceira instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "01000" then
-								report "Teste 6: da terceira instruÁ„o est· correto" severity warning;
+								report "Teste 6: da terceira instru√ß√£o est√° correto" severity warning;
 							else
-								report "Teste 6: da terceira instruÁ„o reg_rs2 est· errado" severity error;
+								report "Teste 6: da terceira instru√ß√£o reg_rs2 est√° errado" severity error;
 							end if;
         					assert reg_rs2 = "01000" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7: terceira instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7: terceira instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00001" then
-								report "Teste 7: da terceira instruÁ„o est· correto" severity warning;
+								report "Teste 7: da terceira instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "00001" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -451,9 +451,9 @@ begin
 							
 							
 							if BEX(151 downto 143) = "101000000" then
-								report "TESTE 8: terceira instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: terceira instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: terceira instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: terceira instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "101000000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -462,7 +462,7 @@ begin
 							
 							
 							
-				when 3 => 	--Teste da quarta instruÁ„o do programa	swap: add,t0,a0,0(t0)	==> 40 ns
+				when 3 => 	--Teste da quarta instru√ß√£o do programa	swap: add,t0,a0,0(t0)	==> 40 ns
 							MemRead_ex 		<= '0';
 							rd_ex			<= "01011";
 							--rs2_id_ex		<= "00011";	
@@ -472,57 +472,57 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: quarta instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: quarta instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da quarta instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da quarta instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 						    report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: quarta instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: quarta instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da quarta instruÁ„o est· correto" severity warning;
+								report "Teste 2: da quarta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3: quarta instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: quarta instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000000" then
-								report "Teste 3: da quarta instruÁ„o est· correto" severity warning;
+								report "Teste 3: da quarta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert Imed = x"00000000" severity error;
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: quarta instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 40 ns" severity note;     
+							report "TESTE 4: quarta instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 40 ns" severity note;     
 							if PC_id= x"00000008" then                       
-								report "Teste 4: da quarta instruÁ„o est· correto" severity warning;                               
+								report "Teste 4: da quarta instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"00000008" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: quarta instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: quarta instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "00000" then  -- 
-								report "Teste 5: da quarta instruÁ„o est· correto" severity warning;
+								report "Teste 5: da quarta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "00000" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6: quarta instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6: quarta instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00000" then
-								report "Teste 6: da quarta instruÁ„o est· correto" severity warning;
+								report "Teste 6: da quarta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00000" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7: quarta instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7: quarta instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00000" then
-								report "Teste 7: da quarta instruÁ„o est· correto" severity warning;
+								report "Teste 7: da quarta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "00000" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -534,9 +534,9 @@ begin
 							
 							report "BEX_in = " & to_hex_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "000000000"then
-								report "TESTE 8: quarta instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: quarta instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: quarta instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: quarta instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "000000000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -544,7 +544,7 @@ begin
 							report "#################################################################################  " severity warning;
 							
 				
-				when 4 => 	--Teste da quinta instruÁ„o do programa swap: lw t1, 0(t0)		 ==> 50 ns 
+				when 4 => 	--Teste da quinta instru√ß√£o do programa swap: lw t1, 0(t0)		 ==> 50 ns 
 							MemRead_ex 		<= '0';
 							rd_ex			<= "01011";
 							ula_ex			<= x"00000003";
@@ -556,57 +556,57 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: quinta instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: quinta instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da quinta instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da quinta instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: quinta instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: quinta instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da quinta instruÁ„o est· correto" severity warning;
+								report "Teste 2: da quinta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3: quinta instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: quinta instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000000" then
-								report "Teste 7\3: da quinta instruÁ„o est· correto" severity warning;
+								report "Teste 7\3: da quinta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert Imed = x"00000000" severity error;
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: quinta instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 50 ns" severity note;     
+							report "TESTE 4: quinta instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 50 ns" severity note;     
 							if PC_id = x"0000000C" then                       
-								report "Teste 4: da quinta instruÁ„o est· correto" severity warning;                               
+								report "Teste 4: da quinta instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"0000000C" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: quinta instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: quinta instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "01000" then  -- 
-								report "Teste 5: da quarta instruÁ„o est· correto" severity warning;
+								report "Teste 5: da quarta instru√ß√£o est√° correto" severity warning;
 							end if;
 							assert reg_rs1 = "00000" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6: quinta instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6: quinta instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00000" then
-								report "Teste 6: da quinta instruÁ„o est· correto" severity warning;
+								report "Teste 6: da quinta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00000" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7: quinta instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note; 
+							report "TESTE 7: quinta instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note; 
 							if reg_rd = "01010" then
-								report "Teste 7: da quinta instruÁ„o est· correto" severity warning;
+								report "Teste 7: da quinta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "01010" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -618,9 +618,9 @@ begin
 							
 							report "BEX_in = " & to_hex_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "001001000"then
-								report "TESTE 8: quinta instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: quinta instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: quinta instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: quinta instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "001001000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -628,7 +628,7 @@ begin
 							report "#################################################################################  " severity warning;
 							
 							
-				when 5 => 	 --Teste da sexta instruÁ„o do programa	swap: lw t2, 4(t0)	  ==> 60 ns
+				when 5 => 	 --Teste da sexta instru√ß√£o do programa	swap: lw t2, 4(t0)	  ==> 60 ns
 							MemRead_ex 		<= '1';
 							rd_ex			<= "00101";
 							ULA_ex			<= x"0000000C";
@@ -640,57 +640,57 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: sexta instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: sexta instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da sexta instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da sexta instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error; 
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: sexta instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: sexta instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da sexta instruÁ„o est· correto" severity warning;
+								report "Teste 2: da sexta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3: sexta instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: sexta instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000003" then
-								report "Teste 3: da sexta instruÁ„o est· correto" severity warning;
+								report "Teste 3: da sexta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert Imed = x"00000003" severity error;
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: sexta instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 60 ns" severity note;     
+							report "TESTE 4: sexta instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 60 ns" severity note;     
 							if PC_id = x"00000010" then                       
-								report "Teste 1\4 da sexta instruÁ„o est· correto" severity warning;                               
+								report "Teste 1\4 da sexta instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"00000010" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: sexta instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: sexta instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "00000" then  -- 
-								report "Teste 5: da sexta instruÁ„o est· correto" severity warning;
+								report "Teste 5: da sexta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "00000" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6: sexta instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6: sexta instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00011" then
-								report "Teste 6: da sexta instruÁ„o est· correto" severity warning;
+								report "Teste 6: da sexta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00011" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7: sexta instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7: sexta instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "01011" then
-								report "Teste 7: da sexta instruÁ„o est· correto" severity warning;
+								report "Teste 7: da sexta instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "01011" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -702,9 +702,9 @@ begin
 							
 							report "BEX_in = " & to_hex_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "001001000"then
-								report "TESTE 8: sexta instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: sexta instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: sexta instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: sexta instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "001001000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -712,7 +712,7 @@ begin
 							report "#################################################################################  " severity warning;
 							
 				
-				when 6 => 	--Teste da sÈtima instruÁ„o do programa swap: sw t2, 0(t0)	 ==> 70 ns
+				when 6 => 	--Teste da s√©tima instru√ß√£o do programa swap: sw t2, 0(t0)	 ==> 70 ns
 							MemRead_ex 		<= '1';
 							rd_ex			<= "00110";
 							--rs1_id_ex		<= "00101";	
@@ -723,57 +723,57 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: sÈtima instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: s√©tima instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da sÈtima instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da s√©tima instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: sÈtima instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: s√©tima instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da sÈtima instruÁ„o est· correto" severity warning;
+								report "Teste 2: da s√©tima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3: sÈtima instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: s√©tima instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000002" then
-								report "Teste 3: da sÈtima instruÁ„o est· correto" severity warning;
+								report "Teste 3: da s√©tima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert Imed = x"00000002" severity error;
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: sÈtima instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 70 ns" severity note;     
+							report "TESTE 4: s√©tima instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 70 ns" severity note;     
 							if PC_id = x"00000014" then                       
-								report "Teste 4: da sÈtima instruÁ„o est· correto" severity warning;                               
+								report "Teste 4: da s√©tima instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"00000014" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: sÈtima instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: s√©tima instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "01011" then
-								report "Teste 5: da sÈtima instruÁ„o est· correto" severity warning;
+								report "Teste 5: da s√©tima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "01011" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6: sÈtima instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note; 
+							report "TESTE 6: s√©tima instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note; 
 							if reg_rs2 = "00010" then
-								report "Teste 5\6: da sÈtima instruÁ„o est· correto" severity warning;
+								report "Teste 5\6: da s√©tima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00010" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7: sÈtima instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7: s√©tima instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00101" then
-								report "Teste 7: da sÈtima instruÁ„o est· correto" severity warning;
+								report "Teste 7: da s√©tima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "00101" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -785,9 +785,9 @@ begin
 							
 							report "BEX_in = " & to_hex_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "001001011"then
-								report "TESTE 8: setima instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: setima instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: setima instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: setima instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "001001011" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -795,7 +795,7 @@ begin
 							report "#################################################################################  " severity warning;
 
 				
-				when 7 => 	--Teste da oitava instruÁ„o do programa swap: sw t1, 4(t0)	   ==> 80 ns
+				when 7 => 	--Teste da oitava instru√ß√£o do programa swap: sw t1, 4(t0)	   ==> 80 ns
 							MemRead_ex 		<= '1';
 							rd_ex			<= "00110";	
 							--rs2_id_ex		<= "00100";
@@ -803,57 +803,57 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: oitava instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: oitava instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da oitava instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da oitava instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: oitava instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: oitava instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da oitava instruÁ„o est· correto" severity warning;
+								report "Teste 2: da oitava instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3: oitava instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: oitava instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000000" then
-								report "Teste 3: da oitava instruÁ„o est· correto" severity warning;
+								report "Teste 3: da oitava instru√ß√£o est√° correto" severity warning;
 							end if;
        						assert Imed = x"00000000" severity error; 
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: oitava instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 80 ns" severity note;     
+							report "TESTE 4: oitava instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 80 ns" severity note;     
 							if PC_id = x"0000000018" then                       
-								report "Teste 4: da oitava instruÁ„o est· correto" severity warning;                               
+								report "Teste 4: da oitava instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"00000018" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: oitava instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: oitava instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "01010" then  -- 
-								report "Teste 5: da oitava instruÁ„o est· correto" severity warning;
+								report "Teste 5: da oitava instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "01010" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6: oitava instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6: oitava instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00101" then
-								report "Teste 6: da oitava instruÁ„o est· correto" severity warning;
+								report "Teste 6: da oitava instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00101" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7: oitava instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7: oitava instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00101" then
-								report "Teste 7: da oitava instruÁ„o est· correto" severity warning;
+								report "Teste 7: da oitava instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "00101" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -865,9 +865,9 @@ begin
 							
 							report "BEX_in = " & to_hex_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "000000000"then
-								report "TESTE 8: oitava instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: oitava instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: oitava instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: oitava instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "000000000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -875,7 +875,7 @@ begin
 							report "#################################################################################  " severity warning;
 							
 				
-				when 8 => --Teste da nona instruÁ„o do programa swap: Jal zero, fim	   ==> 90 ns
+				when 8 => --Teste da nona instru√ß√£o do programa swap: Jal zero, fim	   ==> 90 ns
 							MemRead_ex 		<= '1';
 							rd_ex			<= "00111";
 							ULA_ex			<= x"00000010";
@@ -886,56 +886,56 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1: nona instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1: nona instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1: da nona instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1: da nona instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2: nona instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2: nona instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2: da nona instruÁ„o est· correto" severity warning;
+								report "Teste 2: da nona instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
-							report "TESTE 3: nona instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3: nona instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000000" then
-								report "Teste 3: da nona instruÁ„o est· correto" severity warning;
+								report "Teste 3: da nona instru√ß√£o est√° correto" severity warning;
 							end if;
        						assert Imed = x"00000000" severity error;
 							report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4: nona instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 90 ns" severity note;     
+							report "TESTE 4: nona instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 90 ns" severity note;     
 							if PC_id = x"00000018" then                       
-								report "Teste 4 da nona instruÁ„o est· correto" severity warning;                               
+								report "Teste 4 da nona instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"00000018" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5: nona instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5: nona instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "01010" then  -- 
-								report "Teste 5: da nona instruÁ„o est· correto" severity warning;
+								report "Teste 5: da nona instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "01010" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6: nona instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6: nona instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00101" then
-								report "Teste 6: da nona instruÁ„o est· correto" severity warning;
+								report "Teste 6: da nona instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00101" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7: nona instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7: nona instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00101" then
-								report "Teste 7: da nona instruÁ„o est· correto" severity warning;
+								report "Teste 7: da nona instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "00101" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -947,9 +947,9 @@ begin
 							
 							report "BEX_in = " & to_hex_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "001000000"then
-								report "TESTE 8: nona instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: nona instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: nona instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: nona instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "001000000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -957,7 +957,7 @@ begin
 							report "#################################################################################  " severity warning;
 							
 							
-				when 9 =>	--Teste da decima instruÁ„o do programa swap: Jal zero, fim	   ==> 100 ns
+				when 9 =>	--Teste da decima instru√ß√£o do programa swap: Jal zero, fim	   ==> 100 ns
 							MemRead_ex 		<= '0';
 							rd_ex			<= "00000";
 							ULA_ex			<= x"00000000"; 
@@ -967,57 +967,57 @@ begin
 							report "Count = " & to_string(count) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 1 decima instruÁ„o: Verificando leitura de RA est· no buffer de saÌda" severity note;
+							report "TESTE 1 decima instru√ß√£o: Verificando leitura de RA est√° no buffer de sa√≠da" severity note;
 							if RA = x"00000000" then                 
-       							report "Teste 1 da decima instruÁ„o est· correto" severity warning;                         
+       							report "Teste 1 da decima instru√ß√£o est√° correto" severity warning;                         
 							end if;                                                     
 							assert RA = x"00000000" severity error;
 							report "RA = " & to_hex_string(RA) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 2 decima instruÁ„o: Verificando leitura de RB" severity note;
+							report "TESTE 2 decima instru√ß√£o: Verificando leitura de RB" severity note;
 							if RB = x"00000000" then
-								report "Teste 2 da decima instruÁ„o est· correto" severity warning;
+								report "Teste 2 da decima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert RB = x"00000000" severity error;
 							report "RB = " & to_hex_string(RB) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 3 decima instruÁ„o: Verificando que Imed est· no buffer de saÌda" severity note;
+							report "TESTE 3 decima instru√ß√£o: Verificando que Imed est√° no buffer de sa√≠da" severity note;
 							if Imed = x"00000000" then
-								report "Teste 3 da decima instruÁ„o est· correto" severity warning;
+								report "Teste 3 da decima instru√ß√£o est√° correto" severity warning;
 							end if;
        						assert Imed = x"00000000" severity error;
 							   report "Imed = " & to_hex_string(Imed) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 4 decima instruÁ„o: Verificando que PC_id est· no buffer de saÌda: 90 ns" severity note;     
+							report "TESTE 4 decima instru√ß√£o: Verificando que PC_id est√° no buffer de sa√≠da: 90 ns" severity note;     
 							if PC_id = x"0000001C" then                       
-								report "Teste 4 da decima instruÁ„o est· correto" severity warning;                               
+								report "Teste 4 da decima instru√ß√£o est√° correto" severity warning;                               
         					end if;                                                      
 	    					assert PC_id = x"0000001C" severity error;
 							report "PC_id = " & to_hex_string(PC_id) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 5 decima instruÁ„o: Verificando que rs1 est· no buffer de saÌda" severity note;
+							report "TESTE 5 decima instru√ß√£o: Verificando que rs1 est√° no buffer de sa√≠da" severity note;
 							if reg_rs1 = "00101" then  -- 
-								report "Teste 5 da decima instruÁ„o est· correto" severity warning;
+								report "Teste 5 da decima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs1 = "00101" severity error;
 							report "reg_rs1 = " & to_hex_string(reg_rs1) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 6 decima instruÁ„o: Verificando que rs2 est· no buffer de saÌda" severity note;
+							report "TESTE 6 decima instru√ß√£o: Verificando que rs2 est√° no buffer de sa√≠da" severity note;
 							if reg_rs2 = "00000" then
-								report "Teste 6 da decima instruÁ„o est· correto" severity warning;
+								report "Teste 6 da decima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rs2 = "00000" severity error;
 							report "reg_rs2 = " & to_hex_string(reg_rs2) severity warning;
 							report "=================================================================================  " severity warning;
 							
-							report "TESTE 7 decima instruÁ„o: Verificando que rd est· no buffer de saÌda" severity note;
+							report "TESTE 7 decima instru√ß√£o: Verificando que rd est√° no buffer de sa√≠da" severity note;
 							if reg_rd = "00110" then
-								report "Teste 7 da decima instruÁ„o est· correto" severity warning;
+								report "Teste 7 da decima instru√ß√£o est√° correto" severity warning;
 							end if;
         					assert reg_rd = "00110" severity error;
 							report "reg_rd = " & to_hex_string(reg_rd) severity warning;
@@ -1029,9 +1029,9 @@ begin
 							
 							report "BEX_in = " & to_hex_string(BEX(151 downto 143)) severity warning;
 							if BEX(151 downto 143) = "011011000"then
-								report "TESTE 8: decima instruÁ„o Sinais de controle ==> EST√0 CORRETOs" severity warning;
+								report "TESTE 8: decima instru√ß√£o Sinais de controle ==> EST√É0 CORRETOs" severity warning;
 							else
-								report "Teste 8: decima instruÁ„o Sinais de controle ==> EST√0 ERRADOS" severity error;
+								report "Teste 8: decima instru√ß√£o Sinais de controle ==> EST√É0 ERRADOS" severity error;
 							end if;
 							assert BEX(151 downto 143) = "011011000" severity error;
 							report "BEX_in = " & to_string(BEX(151 downto 143)) severity warning;
@@ -1039,7 +1039,7 @@ begin
 							report "#################################################################################  " severity warning;
 							
 							
-				when 10 => 	--Terminaram as instruÁıes do programa 
+				when 10 => 	--Terminaram as instru√ß√µes do programa 
 							--rs1_id_ex		<= "00000";
 							--rs2_id_ex		<= "00110";
 							rd_mem			<= "00000";
