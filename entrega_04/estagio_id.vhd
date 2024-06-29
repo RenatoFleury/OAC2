@@ -7,112 +7,98 @@ library work;
 use work.tipos.all;
 
 entity estagio_id is
-	port(
-	-- Entradas
-	clock          : in std_logic; 						          -- Base de tempo- bancada de teste
-	BID            : in std_logic_vector(063 downto 0);	-- Informaçoes vindas estágio Busca
-	MemRead_ex     : in std_logic;						          -- Leitura de memória no estagio ex
-	rd_ex          : in std_logic_vector(004 downto 0);	-- Destino nos regs. no estágio ex
-	ula_ex         : in std_logic_vector(031 downto 0);	-- Saída da ULA no estágio Ex
-	MemRead_mem    : in std_logic;						          -- Leitura na memória no estágio mem
-	rd_mem         : in std_logic_vector(004 downto 0);	-- Escrita nos regs. no est'agio mem
-	ula_mem        : in std_logic_vector(031 downto 0);	-- Saída da ULA no estágio Mem 
-	NPC_mem        : in std_logic_vector(031 downto 0); -- Valor do NPC no estagio mem
-	RegWrite_wb    : in std_logic; 						          -- Escrita no RegFile vindo de wb
-	writedata_wb   : in std_logic_vector(031 downto 0);	-- Valor escrito no RegFile - wb
-	rd_wb          : in std_logic_vector(004 downto 0);	-- Endereço do registrador escrito
-	ex_fw_A_Branch : in std_logic_vector(001 downto 0);	-- Seleçao de Branch forwardA
-	ex_fw_B_Branch : in std_logic_vector(001 downto 0);	-- Seleçao de Branch forwardB 
+    port(
+		-- Entradas
+		clock				: in 	std_logic; 						-- Base de tempo- bancada de teste
+		BID					: in 	std_logic_vector(063 downto 0);	-- Informa�oes vindas est�gio Busca
+		MemRead_ex			: in	std_logic;						-- Leitura de mem�ria no estagio ex
+		rd_ex				: in	std_logic_vector(004 downto 0);	-- Destino nos regs. no est�gio ex
+		ula_ex				: in 	std_logic_vector(031 downto 0);	-- Sa�da da ULA no est�gio Ex
+		MemRead_mem			: in	std_logic;						-- Leitura na mem�ria no est�gio mem
+		rd_mem				: in	std_logic_vector(004 downto 0);	-- Escrita nos regs. no est'agio mem
+		ula_mem				: in 	std_logic_vector(031 downto 0);	-- Sa�da da ULA no est�gio Mem 
+		NPC_mem				: in	std_logic_vector(031 downto 0); -- Valor do NPC no estagio mem
+        	RegWrite_wb			: in 	std_logic; 						-- Escrita no RegFile vindo de wb
+        	writedata_wb			: in 	std_logic_vector(031 downto 0);	-- Valor escrito no RegFile - wb
+        	rd_wb				: in 	std_logic_vector(004 downto 0);	-- Endere�o do registrador escrito
+        	ex_fw_A_Branch			: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardA
+        	ex_fw_B_Branch			: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardB 
 		
-	-- Saídas
-	id_Jump_PC     : out std_logic_vector(031 downto 0) := x"00000000";     -- Destino JUmp/Desvio
-	id_PC_src      : out std_logic := '0';				                          -- Seleciona a entrado do PC
-	id_hd_hazard   : out std_logic := '0';				                          -- Preserva o if_id e nao inc. PC
-	id_Branch_nop  : out std_logic := '0';				                          -- Inserçao de um NOP devido ao Branch. 
-		-- limpa o if_id.ri
-	rs1_id_ex      : out std_logic_vector(004 downto 0);	                  -- Endereço rs1 no estágio id
-	rs2_id_ex			 : out std_logic_vector(004 downto 0);	                  -- Endereço rs2 no estágio id
-	BEX					   : out std_logic_vector(151 downto 0) := (others => '0'); -- Saída do ID > EX
-	COP_id				 : out instruction_type := NOP;		                      -- Instrucao no estagio id
-	COP_ex				 : out instruction_type := NOP			                      -- Instruçao no estágio id passada> EX
-	);
+		-- Sa�das
+		id_Jump_PC			: out	std_logic_vector(031 downto 0) := x"00000000";-- Destino JUmp/Desvio
+		id_PC_src			: out	std_logic := '0';				-- Seleciona a entrado do PC
+		id_hd_hazard			: out	std_logic := '0';				-- Preserva o if_id e nao inc. PC
+		id_Branch_nop			: out	std_logic := '0';				-- Inser�ao de um NOP devido ao Branch. 
+																	-- limpa o if_id.ri
+		rs1_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere�o rs1 no est�gio id
+		rs2_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere�o rs2 no est�gio id
+		BEX					: out 	std_logic_vector(151 downto 0) := (others => '0');-- Sa�da do ID > EX
+		COP_id				: out	instruction_type  := NOP;		-- Instrucao no estagio id
+		COP_ex				: out 	instruction_type := NOP			-- Instru�ao no est�gio id passada> EX
+    );
 end entity;
 
 architecture behavioral of estagio_id is
 
-	component regfile is
-		port(
+    component regfile is
+    port(
 		-- Entradas
-		clock			     : in std_logic;						          -- Base de tempo - Bancada de teste
-		RegWrite		   : in std_logic; 					           	-- Sinal de escrita no RegFile
-		read_reg_rs1	 : in std_logic_vector(04 downto 0);  -- Endereço do registrador na saída RA
-		read_reg_rs2	 : in std_logic_vector(04 downto 0);  -- Endereço do registrador na saída RB
-		write_reg_rd	 : in std_logic_vector(04 downto 0);  -- Endereço do registrador a ser escrito
-		data_in			   : in std_logic_vector(31 downto 0);  -- Valor a ser escrito no registrador
-			
-		-- Saídas
-		data_out_a     : out std_logic_vector(31 downto 0); -- Valor lido pelo endereço rs1
-		data_out_b		 : out std_logic_vector(31 downto 0)  -- Valor lido pelo endercço rs2
-		);
-	end component;
-      
-	-- lembrar de inicializar com 0 ou valores equivalentes a um NOP
-	signal rs1           : std_logic_vector(4 downto 0)  := (others => '0'); 
-	signal rs2           : std_logic_vector(4 downto 0)  := (others => '0'); 
-	signal rd            : std_logic_vector(4 downto 0)  := (others => '0');
-	
-	signal RA_id         : std_logic_vector(31 downto 0) := (others => '0'); 
-	signal RB_id         : std_logic_vector(31 downto 0) := (others => '0'); 
-	signal data_out_a    : std_logic_vector(31 downto 0) := (others => '0'); 
-	signal data_out_b    : std_logic_vector(31 downto 0) := (others => '0');
-	
-	signal op            : std_logic_vector(6 downto 0)  := (others => '0');
-	signal funct7        : std_logic_vector(6 downto 0)  := (others => '0');
-	signal funct3        : std_logic_vector(2 downto 0)  := (others => '0');
-
+		clock			: 	in 		std_logic;						-- Base de tempo - Bancada de teste
+        RegWrite		: 	in 		std_logic; 						-- Sinal de escrita no RegFile
+        read_reg_rs1	: 	in 		std_logic_vector(04 downto 0);	-- Endere�o do registrador na sa�da RA
+        read_reg_rs2	: 	in 		std_logic_vector(04 downto 0);	-- Endere�o do registrador na sa�da RB
+        write_reg_rd	: 	in 		std_logic_vector(04 downto 0);	-- Endere�o do registrador a ser escrito
+        data_in			: 	in 		std_logic_vector(31 downto 0);	-- Valor a ser escrito no registrador
+		
+		-- Sa�das
+        data_out_a		: 	out 	std_logic_vector(31 downto 0);	-- Valor lido pelo endere�o rs1
+        data_out_b		: 	out 	std_logic_vector(31 downto 0) 	-- Valor lido pelo enderc�o rs2
+    );
+    end component;
+        -- lembrar de inicializar com 0 ou valores equivalentes a um NOP
+	signal op : std_logic_vector(6 downto 0) := (others => '0');
+	signal rs1,rs2,rd : std_logic_vector(4 downto 0) := (others => '0'); 
+	signal RA_id,RB_id, data_out_a,data_out_b : std_logic_vector(31 downto 0) := (others => '0'); 
+	signal ImmSrcD : std_logic_vector(2 downto 0) := (others => '0');
+	signal extend_bits: std_logic_vector(31 downto 7) := (others => '0');
 	signal invalid_instr : std_logic := '0';
-	signal RegWrite_id   : std_logic := '0';
-	signal MemtoReg_id   : std_logic_vector(1 downto 0)  := (others => '0');
-	signal MemWrite_id   : std_logic := '0';
-	signal ALUSrcD       : std_logic := '0';
-	signal AluOp         : std_logic_vector(2 downto 0)  := (others => '0');
-	signal MemRead_id    : std_logic := '0';
-	signal stallD        : std_logic := '0';
-
-	signal PC_plus4      : std_logic_vector(31 downto 0) := (others => '0');
-	signal immext        : std_logic_vector(31 downto 0) := (others => '0');
-	signal is_jal        : std_logic;
-	signal instrEx       : std_logic_vector(31 downto 0) := (others =>'0');
+	signal funct7 : std_logic_vector(6 downto 0) := (others => '0');
+	signal funct3, AluOp : std_logic_vector(2 downto 0) := (others => '0');
+	signal stallD, ALUSrcD,MemWrite_id,MemRead_id,RegWrite_id : std_logic := '0';
+	signal MemtoReg_id : std_logic_vector(1 downto 0) := (others => '0');
+	signal PC_plus4 : std_logic_vector(31 downto 0) := (others => '0');
+        signal immext : std_logic_vector(31 downto 0) := (others => '0');
+	signal is_jal : std_logic;
+	signal instrEx: std_logic_vector(31 downto 0):=(others =>'0');
+	
 
 begin	
-	--Campos relevantes das instruções
-	rs2       <= BID(24 downto 20);
-	rs1       <= BID(19 downto 15);
-	rd        <= BID(11 downto 7);
-	
-	op        <= BID(6 downto 0);
-	funct7    <= BID(31 downto 25);
-	funct3    <= BID(14 downto 12);
-	
-	PC_plus4  <= std_logic_vector(unsigned(BID(63 downto 32)) + 4);
-	
+	PC_plus4<= std_logic_vector(unsigned(BID(63 downto 32)) + 4);
+	--Campos relevantes das instru��es
+        funct7 <= BID(31 downto 25);
+	rs2 <= BID(24 downto 20);
+	rs1 <= BID(19 downto 15);
+	funct3 <= BID(14 downto 12);
+	rd  <= BID(11 downto 7);
+	op <= BID(6 downto 0);
+
 	rs1_id_ex <= rs1;
 	rs2_id_ex <= BID(24 downto 20);
 
-	COP_ID    <= get_instruction_type(BID(31 downto 0));
+        COP_ID <= get_instruction_type(BID(31 downto 0));
 
-	--Instanciação da Memória
-	registers : regfile 
-		port map(
-			clock => clock,
-			RegWrite => RegWrite_wb,
-			read_reg_rs1 => rs1,
-			read_reg_rs2 => rs2,
-			write_reg_rd => rd_wb,
-			data_in => writedata_wb,
-			data_out_a => data_out_a,
-			data_out_b => data_out_b
-		);
+	--Instancia��o da Mem�ria
+	registers : regfile port map(clock => clock,
+                                     RegWrite => RegWrite_wb,
+				     read_reg_rs1 => rs1,
+                                     read_reg_rs2 => rs2,
+                                     write_reg_rd => rd_wb,
+                                     data_in => writedata_wb,
+                                     data_out_a => data_out_a,
+                                     data_out_b => data_out_b
+	);
+
+	
 
 	process(BID,op,funct3,funct7) begin
 		case op is
@@ -247,9 +233,9 @@ begin
 	
 	-- Branch and jump and link
 	
-	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr)
+	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr) begin
 	if(invalid_instr = '1') then
-			id_jump_pc <= x"00000400"; -- checar qual a posição certa de erro
+			id_jump_pc <= x"00000400"; -- checar qual a posi��o certa de erro
 			id_pc_src <= '1';
 			id_branch_nop <= '1';
 	
@@ -267,7 +253,7 @@ begin
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
 		else 
-			id_jump_pc <= x"00000000"; -- checar qual a posição certa de erro
+			id_jump_pc <= x"00000000"; -- checar qual a posi��o certa de erro
 			id_pc_src <= '0';
 			id_branch_nop <= '0';
 		end if;
@@ -276,14 +262,14 @@ begin
 		id_PC_src <= '1';
 		id_branch_nop <= '1';
 	else 
-			id_jump_pc <= x"00000000"; -- checar qual a posição certa de erro
+			id_jump_pc <= x"00000000"; -- checar qual a posi��o certa de erro
 			id_pc_src <= '0';
 			id_branch_nop <= '0';
 			
         end if;
 	end process;	
 
-	-- Hazard Detection Unit. Provavelmente vai ser necessário realizar o stall também quando MemRead_mem = '1', pois o forwarding vem de ula_mem.
+	-- Hazard Detection Unit. Provavelmente vai ser necess�rio realizar o stall tamb�m quando MemRead_mem = '1', pois o forwarding vem de ula_mem.
 	process(MemRead_ex, MemRead_mem, rd_ex,rd_mem,rs1,rs2) begin
 	if (MemRead_ex = '1' and (rd_ex = rs1 or rd_ex = rs2)) then
 		id_hd_hazard <= '1';
@@ -297,7 +283,7 @@ begin
 	end if;
 
 	end process; 
-	--Forwarding, verificar Páginas 319 e 320. No forwarding da mem, escrever ula_mem ou npc_mem?
+	--Forwarding, verificar P�ginas 319 e 320. No forwarding da mem, escrever ula_mem ou npc_mem?
 	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem) begin
 		if (ex_fw_A_Branch = "01") then 
 			RA_id <= ula_mem;
@@ -324,18 +310,21 @@ begin
 
 	-- Registrador BEX 
 	process(clock) begin
-	if(rising_edge(clock) and StallD = '1') then
-		BEX <= BEX(151 downto 150) & '0' & BEX(148 downto 0);  
-		instrEx<= InstrEx;
-	elsif(rising_edge(clock) and StallD = '0') then
-		BEX <= MemtoReg_id & RegWrite_id & MemWrite_id & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id; 
-		instrEx<= BID(31 downto 0);
-	else
-		BEX <= BEX;
-		instrEx<=InstrEx;
-	end if;
-	end process;
+		if(rising_edge(clock) and StallD = '1') then
+			BEX <=MemtoReg_id & '0' & '0' & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id;
+			instrEx<= BID(31 downto 0);
+		elsif(rising_edge(clock) and StallD = '0') then
+			BEX <= MemtoReg_id & RegWrite_id & MemWrite_id & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id; 
+			instrEx<= BID(31 downto 0);
+		else
+			BEX <= BEX;
+			instrEx<=InstrEx;
+		end if;
+		end process;
 
 	COP_EX <= get_instruction_type(instrEx);
 	
+
+	
+
 end architecture;
