@@ -9,32 +9,32 @@ use work.tipos.all;
 entity estagio_id is
     port(
 		-- Entradas
-		clock				: in 	std_logic; 						-- Base de tempo- bancada de teste
-		BID					: in 	std_logic_vector(063 downto 0);	-- Informa�oes vindas est�gio Busca
-		MemRead_ex			: in	std_logic;						-- Leitura de mem�ria no estagio ex
-		rd_ex				: in	std_logic_vector(004 downto 0);	-- Destino nos regs. no est�gio ex
-		ula_ex				: in 	std_logic_vector(031 downto 0);	-- Sa�da da ULA no est�gio Ex
-		MemRead_mem			: in	std_logic;						-- Leitura na mem�ria no est�gio mem
-		rd_mem				: in	std_logic_vector(004 downto 0);	-- Escrita nos regs. no est'agio mem
-		ula_mem				: in 	std_logic_vector(031 downto 0);	-- Sa�da da ULA no est�gio Mem 
-		NPC_mem				: in	std_logic_vector(031 downto 0); -- Valor do NPC no estagio mem
-		RegWrite_wb			: in 	std_logic; 						-- Escrita no RegFile vindo de wb
-		writedata_wb		: in 	std_logic_vector(031 downto 0);	-- Valor escrito no RegFile - wb
-		rd_wb				: in 	std_logic_vector(004 downto 0);	-- Endere�o do registrador escrito
-		ex_fw_A_Branch		: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardA
-		ex_fw_B_Branch		: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardB 
-		
-		-- Sa�das
-		id_Jump_PC			: out	std_logic_vector(031 downto 0) := x"00000000";-- Destino JUmp/Desvio
-		id_PC_src			: out	std_logic := '0';				-- Seleciona a entrado do PC
-		id_hd_hazard		: out	std_logic := '0';				-- Preserva o if_id e nao inc. PC
-		id_Branch_nop		: out	std_logic := '0';				-- Inser�ao de um NOP devido ao Branch. 
-																	-- limpa o if_id.ri
-		rs1_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere�o rs1 no est�gio id
-		rs2_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere�o rs2 no est�gio id
-		BEX					: out 	std_logic_vector(151 downto 0) := (others => '0');-- Sa�da do ID > EX
-		COP_id				: out	instruction_type  := NOP;		-- Instrucao no estagio id
-		COP_ex				: out 	instruction_type := NOP			-- Instru�ao no est�gio id passada> EX
+		clock               : in	std_logic;                       -- Base de tempo- bancada de teste
+		BID                 : in	std_logic_vector(063 downto 0);  -- Informacoes vindas estagio Busca
+		MemRead_ex          : in	std_logic;                       -- Leitura de memoria no estagio ex
+		rd_ex               : in	std_logic_vector(004 downto 0);  -- Destino nos regs. no estagio ex
+		ula_ex              : in	std_logic_vector(031 downto 0);  -- Saida da ULA no estagio Ex
+		MemRead_mem         : in	std_logic;                       -- Leitura na memoria no estagio mem
+		rd_mem              : in	std_logic_vector(004 downto 0);  -- Escrita nos regs. no estagio mem
+		ula_mem             : in	std_logic_vector(031 downto 0);  -- Saada da ULA no estagio Mem 
+		NPC_mem             : in	std_logic_vector(031 downto 0);  -- Valor do NPC no estagio mem
+		RegWrite_wb         : in	std_logic;                       -- Escrita no RegFile vindo de wb
+		writedata_wb        : in	std_logic_vector(031 downto 0);  -- Valor escrito no RegFile - wb
+		rd_wb               : in	std_logic_vector(004 downto 0);  -- Endereco do registrador escrito
+		ex_fw_A_Branch      : in	std_logic_vector(001 downto 0);  -- Selecao de Branch forwardA
+		ex_fw_B_Branch      : in	std_logic_vector(001 downto 0);  -- Selecao de Branch forwardB 
+
+		-- Saidas
+		id_Jump_PC          : out	std_logic_vector(031 downto 0) := x"00000000";-- Destino JUmp/Desvio
+		id_PC_src           : out	std_logic := '0';				-- Seleciona a entrado do PC
+		id_hd_hazard        : out	std_logic := '0';				-- Preserva o if_id e nao inc. PC
+		id_Branch_nop       : out	std_logic := '0';				-- Insercao de um NOP devido ao Branch. 
+		                                                            -- limpa o if_id.ri
+		rs1_id_ex           : out	std_logic_vector(004 downto 0);	-- Endereco rs1 no estagio id
+		rs2_id_ex           : out	std_logic_vector(004 downto 0);	-- Endereco rs2 no estagio id
+		BEX                 : out	std_logic_vector(151 downto 0) := (others => '0');-- Saida do ID > EX
+		COP_id              : out	instruction_type  := NOP;		-- Instrucao no estagio id
+		COP_ex              : out	instruction_type := NOP			-- Instrucao no estagio id passada> EX
     );
 end entity;
 
@@ -45,9 +45,9 @@ architecture behavioral of estagio_id is
 		-- Entradas
 		clock			: 	in 		std_logic;						-- Base de tempo - Bancada de teste
         RegWrite		: 	in 		std_logic; 						-- Sinal de escrita no RegFile
-        read_reg_rs1	: 	in 		std_logic_vector(04 downto 0);	-- Endere�o do registrador na sa�da RA
-        read_reg_rs2	: 	in 		std_logic_vector(04 downto 0);	-- Endere�o do registrador na sa�da RB
-        write_reg_rd	: 	in 		std_logic_vector(04 downto 0);	-- Endere�o do registrador a ser escrito
+        read_reg_rs1	: 	in 		std_logic_vector(04 downto 0);	-- Endereco do registrador na saida RA
+        read_reg_rs2	: 	in 		std_logic_vector(04 downto 0);	-- Endereco do registrador na saida RB
+        write_reg_rd	: 	in 		std_logic_vector(04 downto 0);	-- Endereco do registrador a ser escrito
         data_in			: 	in 		std_logic_vector(31 downto 0);	-- Valor a ser escrito no registrador
 		
 		-- Sa�das
