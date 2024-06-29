@@ -18,17 +18,17 @@ entity estagio_id is
 		rd_mem				: in	std_logic_vector(004 downto 0);	-- Escrita nos regs. no est'agio mem
 		ula_mem				: in 	std_logic_vector(031 downto 0);	-- Sa�da da ULA no est�gio Mem 
 		NPC_mem				: in	std_logic_vector(031 downto 0); -- Valor do NPC no estagio mem
-        	RegWrite_wb			: in 	std_logic; 						-- Escrita no RegFile vindo de wb
-        	writedata_wb			: in 	std_logic_vector(031 downto 0);	-- Valor escrito no RegFile - wb
-        	rd_wb				: in 	std_logic_vector(004 downto 0);	-- Endere�o do registrador escrito
-        	ex_fw_A_Branch			: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardA
-        	ex_fw_B_Branch			: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardB 
+		RegWrite_wb			: in 	std_logic; 						-- Escrita no RegFile vindo de wb
+		writedata_wb		: in 	std_logic_vector(031 downto 0);	-- Valor escrito no RegFile - wb
+		rd_wb				: in 	std_logic_vector(004 downto 0);	-- Endere�o do registrador escrito
+		ex_fw_A_Branch		: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardA
+		ex_fw_B_Branch		: in 	std_logic_vector(001 downto 0);	-- Sele�ao de Branch forwardB 
 		
 		-- Sa�das
 		id_Jump_PC			: out	std_logic_vector(031 downto 0) := x"00000000";-- Destino JUmp/Desvio
 		id_PC_src			: out	std_logic := '0';				-- Seleciona a entrado do PC
-		id_hd_hazard			: out	std_logic := '0';				-- Preserva o if_id e nao inc. PC
-		id_Branch_nop			: out	std_logic := '0';				-- Inser�ao de um NOP devido ao Branch. 
+		id_hd_hazard		: out	std_logic := '0';				-- Preserva o if_id e nao inc. PC
+		id_Branch_nop		: out	std_logic := '0';				-- Inser�ao de um NOP devido ao Branch. 
 																	-- limpa o if_id.ri
 		rs1_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere�o rs1 no est�gio id
 		rs2_id_ex			: out	std_logic_vector(004 downto 0);	-- Endere�o rs2 no est�gio id
@@ -67,7 +67,7 @@ architecture behavioral of estagio_id is
 	signal stallD, ALUSrcD,MemWrite_id,MemRead_id,RegWrite_id : std_logic := '0';
 	signal MemtoReg_id : std_logic_vector(1 downto 0) := (others => '0');
 	signal PC_plus4 : std_logic_vector(31 downto 0) := (others => '0');
-        signal immext : std_logic_vector(31 downto 0) := (others => '0');
+	signal immext : std_logic_vector(31 downto 0) := (others => '0');
 	signal is_jal : std_logic;
 	signal instrEx: std_logic_vector(31 downto 0):=(others =>'0');
 	
@@ -75,7 +75,7 @@ architecture behavioral of estagio_id is
 begin	
 	PC_plus4<= std_logic_vector(unsigned(BID(63 downto 32)) + 4);
 	--Campos relevantes das instru��es
-        funct7 <= BID(31 downto 25);
+	funct7 <= BID(31 downto 25);
 	rs2 <= BID(24 downto 20);
 	rs1 <= BID(19 downto 15);
 	funct3 <= BID(14 downto 12);
@@ -85,33 +85,31 @@ begin
 	rs1_id_ex <= rs1;
 	rs2_id_ex <= BID(24 downto 20);
 
-        COP_ID <= get_instruction_type(BID(31 downto 0));
+	COP_ID <= get_instruction_type(BID(31 downto 0));
 
 	--Instancia��o da Mem�ria
 	registers : regfile port map(clock => clock,
-                                     RegWrite => RegWrite_wb,
-				     read_reg_rs1 => rs1,
-                                     read_reg_rs2 => rs2,
-                                     write_reg_rd => rd_wb,
-                                     data_in => writedata_wb,
-                                     data_out_a => data_out_a,
-                                     data_out_b => data_out_b
+                                 RegWrite => RegWrite_wb,
+                                 read_reg_rs1 => rs1,
+                                 read_reg_rs2 => rs2,
+                                 write_reg_rd => rd_wb,
+                                 data_in => writedata_wb,
+                                 data_out_a => data_out_a,
+                                 data_out_b => data_out_b
 	);
 
-	
 
 	process(BID,op,funct3,funct7) begin
 		case op is
 		when "0110011" => --R type
 
 			immext <= (others => '0');
-		        if (funct7 = "0000000" and funct3 = "000") then
+			if (funct7 = "0000000" and funct3 = "000") then
 				invalid_instr <= '0';
 				AluOP <= "000";
 			elsif (funct7 = "0000000" and funct3 = "010") then
 				invalid_instr <= '0';
 				AluOP <= "010";
-			
 			else 
 				invalid_instr <= '1';
 			end if; 
@@ -201,34 +199,34 @@ begin
                    '0' when "1100011", --beq
                    '1' when "0010011", --I type
                    '0' when "1101111", --jal
-		   '1' when "1100111", --jalr
-		   '0' when others;
+                   '1' when "1100111", --jalr
+                   '0' when others;
    	with op select 
         RegWrite_id <= '1' when "0000011", --lw
-                   '0' when "0100011", --sw
-                   '1' when "0110011", --R type
-                   '0' when "1100011", --beq
-                   '1' when "0010011", --I type
-                   '1' when "1101111", --jal
-		   '1' when "1100111", --jalr
-                   '0' when others;
+                       '0' when "0100011", --sw
+                       '1' when "0110011", --R type
+                       '0' when "1100011", --beq
+                       '1' when "0010011", --I type
+                       '1' when "1101111", --jal
+                       '1' when "1100111", --jalr
+                       '0' when others;
     	with op select 
         MemWrite_id <= '1' when "0100011", --sw
-                     '0' when others;
+                       '0' when others;
 
     	with op select 
         MemRead_id  <= '1' when "0000011", --lw
-                     '0' when others;
+                       '0' when others;
 
     	with op select 
         MemtoReg_id <= "01" when "0000011", --lw
-                      "00" when "0100011", --sw
-                      "00" when "0110011", --R type
-                      "00" when "1100011", --beq
-                      "00" when "0010011", --I type
-                      "10" when "1101111", --jal
-                      "10" when "1100111", --jalr
-                      "00" when others;
+                       "00" when "0100011", --sw
+                       "00" when "0110011", --R type
+                       "00" when "1100011", --beq
+                       "00" when "0010011", --I type
+                       "10" when "1101111", --jal
+                       "10" when "1100111", --jalr
+                       "00" when others;
 
 	
 	-- Branch and jump and link
@@ -262,9 +260,9 @@ begin
 		id_PC_src <= '1';
 		id_branch_nop <= '1';
 	else 
-			id_jump_pc <= x"00000000"; -- checar qual a posi��o certa de erro
-			id_pc_src <= '0';
-			id_branch_nop <= '0';
+		id_jump_pc <= x"00000000"; -- checar qual a posi��o certa de erro
+		id_pc_src <= '0';
+		id_branch_nop <= '0';
 			
         end if;
 	end process;	
