@@ -50,9 +50,9 @@ architecture behavioral of estagio_id is
         write_reg_rd	: 	in 		std_logic_vector(04 downto 0);	-- Endereco do registrador a ser escrito
         data_in			: 	in 		std_logic_vector(31 downto 0);	-- Valor a ser escrito no registrador
 		
-		-- Sa�das
-        data_out_a		: 	out 	std_logic_vector(31 downto 0);	-- Valor lido pelo endere�o rs1
-        data_out_b		: 	out 	std_logic_vector(31 downto 0) 	-- Valor lido pelo enderc�o rs2
+		-- Saidas
+        data_out_a		: 	out 	std_logic_vector(31 downto 0);	-- Valor lido pelo endere o rs1
+        data_out_b		: 	out 	std_logic_vector(31 downto 0) 	-- Valor lido pelo enderc o rs2
     );
     end component;
         -- lembrar de inicializar com 0 ou valores equivalentes a um NOP
@@ -70,11 +70,12 @@ architecture behavioral of estagio_id is
 	signal immext : std_logic_vector(31 downto 0) := (others => '0');
 	signal is_jal : std_logic;
 	signal instrEx: std_logic_vector(31 downto 0):=(others =>'0');
+	signal rs1_bool, rs2_bool : std_logic := '0';
 	
 
 begin	
 	PC_plus4<= std_logic_vector(unsigned(BID(63 downto 32)) + 4);
-	--Campos relevantes das instru��es
+	--Campos relevantes das instrucoes
 	funct7 <= BID(31 downto 25);
 	rs2 <= BID(24 downto 20);
 	rs1 <= BID(19 downto 15);
@@ -87,7 +88,7 @@ begin
 
 	COP_ID <= get_instruction_type(BID(31 downto 0));
 
-	--Instancia��o da Mem�ria
+	--Instanciacao da Memoria
 	registers : regfile port map(clock => clock,
                                  RegWrite => RegWrite_wb,
                                  read_reg_rs1 => rs1,
@@ -102,7 +103,8 @@ begin
 	process(BID,op,funct3,funct7) begin
 		case op is
 		when "0110011" => --R type
-
+			rs1_bool <= '1';
+			rs2_bool <= '1';
 			immext <= (others => '0');
 			if (funct7 = "0000000" and funct3 = "000") then
 				invalid_instr <= '0';
@@ -115,6 +117,8 @@ begin
 			end if; 
 			
 		when "0010011" => --I type
+			rs1_bool <= '1';
+			rs2_bool <= '0';			
 			if (funct3 = "000") then
 				immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 				invalid_instr <= '0';
@@ -146,7 +150,8 @@ begin
 				invalid_instr <= '1';
 			end if;
 		when "0000011" =>	--lw
-
+			rs1_bool <= '1';
+			rs2_bool <= '0';
 			immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 			if (funct3 = "010") then
 				invalid_instr <= '0';
@@ -154,6 +159,8 @@ begin
 				invalid_instr <= '1';
 			end if;
 		when "0100011" => -- sw
+			rs1_bool <= '1';
+			rs2_bool <= '1';
 
 			immext <= (31 downto 12 => BID(31)) & BID(31 downto 25) & BID(11 downto 7);
 			if (funct3 = "010") then
@@ -162,7 +169,8 @@ begin
 				invalid_instr <= '1';
 			end if;
 		when "1100011" => -- Branch
-
+			rs1_bool <= '1';
+			rs2_bool <= '1';
 			immext <= (31 downto 12 => BID(31)) & BID(7) & BID(30 downto 25) & BID(11 downto 8) & '0';
 			if (funct3 = "000" or funct3 = "001" or funct3 = "100") then -- beq, bne, blt
 		      		invalid_instr <= '0';
@@ -170,10 +178,14 @@ begin
 				invalid_instr <= '1';
 			end if;
 		when "1101111" => -- Branch and link
+			rs1_bool <= '0';
+			rs2_bool <= '0';
 			 immext <= (31 downto 20 => BID(31)) & BID(19 downto 12) & BID(20) & BID(30 downto 21) & '0';
 			 invalid_instr <= '0';
 			 is_jal <= '1';
 		when "1100111" => -- Jalr
+			rs1_bool <= '1';
+			rs2_bool <= '0';
 			 immext <= (31 downto 13 => BID(31)) & BID(31 downto 20) & '0';
 			 if (funct3 = "000") then
 				invalid_instr <= '0';
@@ -181,6 +193,8 @@ begin
 				invalid_instr <= '1';
 			 end if;
 		when "0000000" => -- kind of nop
+			rs1_bool <= '0';
+			rs2_bool <= '0';
 			 immext <= (others => '0');
 			 if (BID(31 downto 0) = x"00000000") then
 				invalid_instr <= '0';
@@ -233,7 +247,7 @@ begin
 	
 	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr) begin
 	if(invalid_instr = '1') then
-			id_jump_pc <= x"00000400"; -- checar qual a posi��o certa de erro
+			id_jump_pc <= x"00000400"; -- checar qual a posicao certa de erro
 			id_pc_src <= '1';
 			id_branch_nop <= '1';
 	
@@ -251,7 +265,7 @@ begin
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
 		else 
-			id_jump_pc <= x"00000000"; -- checar qual a posi��o certa de erro
+			id_jump_pc <= x"00000000"; -- checar qual a posicao certa de erro
 			id_pc_src <= '0';
 			id_branch_nop <= '0';
 		end if;
@@ -260,19 +274,19 @@ begin
 		id_PC_src <= '1';
 		id_branch_nop <= '1';
 	else 
-		id_jump_pc <= x"00000000"; -- checar qual a posi��o certa de erro
+		id_jump_pc <= x"00000000"; -- checar qual a posicao certa de erro
 		id_pc_src <= '0';
 		id_branch_nop <= '0';
 			
         end if;
 	end process;	
 
-	-- Hazard Detection Unit. Provavelmente vai ser necess�rio realizar o stall tamb�m quando MemRead_mem = '1', pois o forwarding vem de ula_mem.
-	process(MemRead_ex, MemRead_mem, rd_ex,rd_mem,rs1,rs2) begin
-	if (MemRead_ex = '1' and (rd_ex = rs1 or rd_ex = rs2)) then
+	-- Hazard Detection Unit
+	process(MemRead_ex, MemRead_mem, rd_ex,rd_mem,rs1,rs2,rs1_bool,rs2_bool) begin
+	if (MemRead_ex = '1' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
 		id_hd_hazard <= '1';
 		stallD <= '1';
-	elsif (MemRead_mem = '1' and (rd_mem = rs1 or rd_mem = rs2)) then
+	elsif (MemRead_mem = '1' and ((rd_mem = rs1 and rs1_bool = '1') or (rd_mem = rs2 and rs2_bool = '1')) and (rd_mem/="00000")) then
 		id_hd_hazard <= '1';
 		stallD <= '1';
 	else
@@ -281,7 +295,7 @@ begin
 	end if;
 
 	end process; 
-	--Forwarding, verificar P�ginas 319 e 320. No forwarding da mem, escrever ula_mem ou npc_mem?
+	--Forwarding, verificar Paginas 319 e 320. No forwarding da mem, escrever ula_mem ou npc_mem?
 	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem) begin
 		if (ex_fw_A_Branch = "01") then 
 			RA_id <= ula_mem;
@@ -309,7 +323,7 @@ begin
 	-- Registrador BEX 
 	process(clock) begin
 		if(rising_edge(clock) and StallD = '1') then
-			BEX <=MemtoReg_id & '0' & '0' & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id;
+			BEX <=MemtoReg_id & '0' & '0' & '0' & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id;
 			instrEx<= BID(31 downto 0);
 		elsif(rising_edge(clock) and StallD = '0') then
 			BEX <= MemtoReg_id & RegWrite_id & MemWrite_id & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id; 
