@@ -205,7 +205,7 @@ begin
 		end case;
 	end process;
 	
-	-- mesma coisa ano passado?
+
    	with op select 
         ALUSrcD <= '1' when "0000011", --lw
                    '1' when "0100011", --sw
@@ -295,7 +295,7 @@ begin
 	end if;
 
 	end process; 
-	--Forwarding, verificar Paginas 319 e 320. No forwarding da mem, escrever ula_mem ou npc_mem?
+	--Forwarding
 	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem) begin
 		if (ex_fw_A_Branch = "01") then 
 			RA_id <= ula_mem;
