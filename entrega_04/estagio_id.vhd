@@ -242,8 +242,7 @@ begin
                        "10" when "1101111", --jal
                        "10" when "1100111", --jalr
                        "00" when others;
-	
-	-- Branch and jump and link
+
 	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr) begin
 	if(invalid_instr = '1') then
 			id_jump_pc <= x"00000400";
@@ -280,23 +279,23 @@ begin
 		id_pc_src <= '0';
 		id_branch_nop <= '0';
 			
-    end if;
+	end if;
 	end process;	
 
 	-- Hazard Detection Unit
 	process(MemRead_ex, MemRead_mem, rd_ex,rd_mem,rs1,rs2,rs1_bool,rs2_bool) begin
-	if (MemRead_ex = '1' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
-		id_hd_hazard <= '1';
-		stallD <= '1';
-	elsif (MemRead_mem = '1' and ((rd_mem = rs1 and rs1_bool = '1') or (rd_mem = rs2 and rs2_bool = '1')) and (rd_mem/="00000")) then
-		id_hd_hazard <= '1';
-		stallD <= '1';
-	else
-		id_hd_hazard <= '0';
-		stallD <= '0';
-	end if;
+		if (MemRead_ex = '1' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
+			id_hd_hazard <= '1';
+			stallD <= '1';
+		elsif (MemRead_mem = '1' and ((rd_mem = rs1 and rs1_bool = '1') or (rd_mem = rs2 and rs2_bool = '1')) and (rd_mem/="00000")) then
+			id_hd_hazard <= '1';
+			stallD <= '1';
+		else
+			id_hd_hazard <= '0';
+			stallD <= '0';
+		end if;
+	end process;
 
-	end process; 
 	--Forwarding
 	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem, NPC_mem, rs1_bool, is_jump) begin
 		if(is_jump = '1' and rs1_bool = '1') then
