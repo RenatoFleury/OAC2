@@ -50,7 +50,7 @@ architecture behavioral of estagio_id is
         write_reg_rd	: 	in 		std_logic_vector(04 downto 0);	-- Endereco do registrador a ser escrito
         data_in			: 	in 		std_logic_vector(31 downto 0);	-- Valor a ser escrito no registrador
 		
-		-- Saidas
+		-- Sa das
         data_out_a		: 	out 	std_logic_vector(31 downto 0);	-- Valor lido pelo endere o rs1
         data_out_b		: 	out 	std_logic_vector(31 downto 0) 	-- Valor lido pelo enderc o rs2
     );
@@ -68,14 +68,14 @@ architecture behavioral of estagio_id is
 	signal MemtoReg_id : std_logic_vector(1 downto 0) := (others => '0');
 	signal PC_plus4 : std_logic_vector(31 downto 0) := (others => '0');
 	signal immext : std_logic_vector(31 downto 0) := (others => '0');
-	signal is_jal : std_logic;
+	signal is_jump : std_logic;
 	signal instrEx: std_logic_vector(31 downto 0):=(others =>'0');
 	signal rs1_bool, rs2_bool : std_logic := '0';
 	
 
 begin	
 	PC_plus4<= std_logic_vector(unsigned(BID(63 downto 32)) + 4);
-	--Campos relevantes das instrucoes
+	--Campos relevantes das instru  es
 	funct7 <= BID(31 downto 25);
 	rs2 <= BID(24 downto 20);
 	rs1 <= BID(19 downto 15);
@@ -88,7 +88,7 @@ begin
 
 	COP_ID <= get_instruction_type(BID(31 downto 0));
 
-	--Instanciacao da Memoria
+	--Instancia  o da Mem ria
 	registers : regfile port map(clock => clock,
                                  RegWrite => RegWrite_wb,
                                  read_reg_rs1 => rs1,
@@ -171,6 +171,7 @@ begin
 		when "1100011" => -- Branch
 			rs1_bool <= '1';
 			rs2_bool <= '1';
+			is_jump <= '1';
 			immext <= (31 downto 12 => BID(31)) & BID(7) & BID(30 downto 25) & BID(11 downto 8) & '0';
 			if (funct3 = "000" or funct3 = "001" or funct3 = "100") then -- beq, bne, blt
 		      		invalid_instr <= '0';
@@ -182,10 +183,11 @@ begin
 			rs2_bool <= '0';
 			 immext <= (31 downto 20 => BID(31)) & BID(19 downto 12) & BID(20) & BID(30 downto 21) & '0';
 			 invalid_instr <= '0';
-			 is_jal <= '1';
+			 is_jump <= '1';
 		when "1100111" => -- Jalr
 			rs1_bool <= '1';
 			rs2_bool <= '0';
+			is_jump <= '1';
 			 immext <= (31 downto 13 => BID(31)) & BID(31 downto 20) & '0';
 			 if (funct3 = "000") then
 				invalid_instr <= '0';
@@ -205,7 +207,7 @@ begin
 		end case;
 	end process;
 	
-
+	-- mesma coisa ano passado?
    	with op select 
         ALUSrcD <= '1' when "0000011", --lw
                    '1' when "0100011", --sw
@@ -247,7 +249,7 @@ begin
 	
 	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr) begin
 	if(invalid_instr = '1') then
-			id_jump_pc <= x"00000400"; -- checar qual a posicao certa de erro
+			id_jump_pc <= x"00000400"; -- checar qual a posi  o certa de erro
 			id_pc_src <= '1';
 			id_branch_nop <= '1';
 	
@@ -265,7 +267,7 @@ begin
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
 		else 
-			id_jump_pc <= x"00000000"; -- checar qual a posicao certa de erro
+			id_jump_pc <= x"00000000"; -- checar qual a posi  o certa de erro
 			id_pc_src <= '0';
 			id_branch_nop <= '0';
 		end if;
@@ -273,8 +275,12 @@ begin
 		id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
 		id_PC_src <= '1';
 		id_branch_nop <= '1';
+	elsif(op = "1100111") then 
+		id_jump_pc <= std_logic_vector(unsigned(RA_id) + unsigned(immext)) and x"FFFFFFFE";
+		id_pc_src <= '1';
+		id_branch_nop <= '1';
 	else 
-		id_jump_pc <= x"00000000"; -- checar qual a posicao certa de erro
+		id_jump_pc <= x"00000000"; -- checar qual a posi  o certa de erro
 		id_pc_src <= '0';
 		id_branch_nop <= '0';
 			
@@ -296,25 +302,33 @@ begin
 
 	end process; 
 	--Forwarding
-	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem) begin
-		if (ex_fw_A_Branch = "01") then 
-			RA_id <= ula_mem;
-		elsif (ex_fw_A_Branch = "10") then 
-			RA_id <= ula_ex;
-		elsif(ex_fw_A_Branch = "11") then
-			RA_id <= NPC_mem;
+	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem, NPC_mem, rs1_bool, is_jump) begin
+		if(is_jump = '1' and rs1_bool = '1') then
+			if (ex_fw_A_Branch = "01") then 
+				RA_id <= ula_mem;
+			elsif (ex_fw_A_Branch = "10") then 
+				RA_id <= ula_ex;
+			elsif(ex_fw_A_Branch = "11") then
+				RA_id <= NPC_mem;
+			else
+				RA_id <= data_out_a;
+			end if;
 		else
 			RA_id <= data_out_a;
 		end if;
 	end process;
 
-	process(ex_fw_B_Branch, data_out_b,ula_ex,ula_mem) begin
-		if (ex_fw_B_Branch = "01") then
-			RB_id <= ula_mem;
-		elsif (ex_fw_B_Branch = "10") then
-			RB_id <= ula_ex;
-		elsif(ex_fw_B_Branch = "11") then
-			RB_id <= NPC_mem;
+	process(ex_fw_B_Branch, data_out_b,ula_ex,ula_mem,NPC_mem,rs2_bool,is_jump) begin
+		if(is_jump = '1' and rs2_bool = '1') then
+			if (ex_fw_B_Branch = "01") then 
+				RB_id <= ula_mem;
+			elsif (ex_fw_B_Branch = "10") then 
+				RB_id <= ula_ex;
+			elsif(ex_fw_B_Branch = "11") then
+				RB_id <= NPC_mem;
+			else
+				RB_id <= data_out_b;
+			end if;
 		else
 			RB_id <= data_out_b;
 		end if;
