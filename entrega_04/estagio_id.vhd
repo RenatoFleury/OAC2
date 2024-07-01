@@ -207,7 +207,6 @@ begin
 		end case;
 	end process;
 	
-	-- mesma coisa ano passado?
    	with op select 
         ALUSrcD <= '1' when "0000011", --lw
                    '1' when "0100011", --sw
@@ -243,16 +242,13 @@ begin
                        "10" when "1101111", --jal
                        "10" when "1100111", --jalr
                        "00" when others;
-
 	
 	-- Branch and jump and link
-	
 	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr) begin
 	if(invalid_instr = '1') then
-			id_jump_pc <= x"00000400"; -- checar qual a posi  o certa de erro
+			id_jump_pc <= x"00000400";
 			id_pc_src <= '1';
 			id_branch_nop <= '1';
-	
 	elsif (op = "1100011") then
 		if(funct3 = "000" and RA_id = RB_id) then 
 			id_Jump_PC <= std_logic_vector(unsigned(BID(63 downto 32)) + unsigned(immext));
@@ -267,7 +263,7 @@ begin
 			id_PC_src <= '1';
 			id_branch_nop <= '1';
 		else 
-			id_jump_pc <= x"00000000"; -- checar qual a posi  o certa de erro
+			id_jump_pc <= x"00000000";
 			id_pc_src <= '0';
 			id_branch_nop <= '0';
 		end if;
@@ -280,11 +276,11 @@ begin
 		id_pc_src <= '1';
 		id_branch_nop <= '1';
 	else 
-		id_jump_pc <= x"00000000"; -- checar qual a posi  o certa de erro
+		id_jump_pc <= x"00000000";
 		id_pc_src <= '0';
 		id_branch_nop <= '0';
 			
-        end if;
+    end if;
 	end process;	
 
 	-- Hazard Detection Unit
