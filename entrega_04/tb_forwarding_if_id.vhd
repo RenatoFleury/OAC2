@@ -265,7 +265,7 @@ begin
 							rd_wb			<= "00000";
 			   				ex_fw_A_Branch 	<= "00";
 							ex_fw_B_Branch 	<= "00"; 
-			when others => null;
+	when others => null;
 	
 	end case;
 	if (count = 4) then
