@@ -71,6 +71,7 @@ architecture behavioral of estagio_id is
 	signal is_jump : std_logic;
 	signal instrEx: std_logic_vector(31 downto 0):=(others =>'0');
 	signal rs1_bool, rs2_bool : std_logic := '0';
+	signal SEPC, SCAUSE : std_logic_vector(31 downto 0):= (others => '0');
 	
 
 begin	
@@ -243,6 +244,7 @@ begin
                        "10" when "1100111", --jalr
                        "00" when others;
 
+	-- Branch and jump and link
 	process(BID,op,immext,RA_id,RB_id,funct3,invalid_instr) begin
 	if(invalid_instr = '1') then
 			id_jump_pc <= x"00000400";
@@ -284,16 +286,16 @@ begin
 
 	-- Hazard Detection Unit
 	process(MemRead_ex, MemRead_mem, rd_ex,rd_mem,rs1,rs2,rs1_bool,rs2_bool) begin
-		if (MemRead_ex = '1' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
-			id_hd_hazard <= '1';
-			stallD <= '1';
-		elsif (MemRead_mem = '1' and ((rd_mem = rs1 and rs1_bool = '1') or (rd_mem = rs2 and rs2_bool = '1')) and (rd_mem/="00000")) then
-			id_hd_hazard <= '1';
-			stallD <= '1';
-		else
-			id_hd_hazard <= '0';
-			stallD <= '0';
-		end if;
+	if (MemRead_ex = '1' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
+		id_hd_hazard <= '1';
+		stallD <= '1';
+	elsif (MemRead_mem = '1' and ((rd_mem = rs1 and rs1_bool = '1') or (rd_mem = rs2 and rs2_bool = '1')) and (rd_mem/="00000")) then
+		id_hd_hazard <= '1';
+		stallD <= '1';
+	else
+		id_hd_hazard <= '0';
+		stallD <= '0';
+	end if;
 	end process;
 
 	--Forwarding
@@ -345,7 +347,13 @@ begin
 
 	COP_EX <= get_instruction_type(instrEx);
 	
-
-	
-
+	process(clock, invalid_instr, BID) begin
+		if (invalid_instr = '1') then
+			SEPC <= BID(63 downto 32);
+			SCAUSE <= x"00000002";
+		else
+			SEPC <= SEPC;
+			SCAUSE <= SCAUSE;
+		end if;
+	end process;
 end architecture;
