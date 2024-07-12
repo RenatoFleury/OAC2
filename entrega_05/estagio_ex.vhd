@@ -71,22 +71,44 @@ end component;
 	signal zero,ALUsrc : std_logic := '0';
 	signal rs1_ex,rs2_ex : std_logic_vector(4 downto 0) := (others => '1');
 	signal forwardA,forwardB : std_logic_vector(1 downto 0):=(others => '0');
-	
+
+    -- Sinais do BEX:
+    signal MemToReg         : std_logic_vector(1 downto 0);  -- BEX(151 downto 150);
+    signal RegWrite         : std_logic;                     -- BEX(149);
+    signal MemWrite         : std_logic;                     -- BEX(148);
+    signal MemRead          : std_logic;                     -- BEX(147);
+    signal AluSrc           : std_logic;                     -- BEX(146);
+    signal Aluop            : std_logic_vector(2 downto 0);  -- BEX(145 downto 143);
+    signal rd_ex            : std_logic_vector(4 downto 0);  -- BEX(142 downto 138);
+    signal rs2_ex           : std_logic_vector(4 downto 0);  -- BEX(137 downto 133);
+    signal rs1_ex           : std_logic_vector(4 downto 0);  -- BEX(132 downto 128);
+    signal PC_plus4         : std_logic_vector(31 downto 0); -- BEX(127 downto 096);
+    signal Imed             : std_logic_vector(31 downto 0); -- BEX(095 downto 064);
+    signal RB               : std_logic_vector(31 downto 0); -- BEX(063 downto 032);
+    signal RA               : std_logic_vector(31 downto 0); -- BEX(031 downto 000);
+
 begin
-	ALUop <= BEX(145 downto 143);
-	ALUsrc <= BEX(146);
-	rs1_ex <= BEX(132 downto 128);
-	rs2_ex <= BEX(137 downto 133);
-	-- saidas straightforward
-	rd_ex <= BEX(142 downto 138);
-	MemRead_ex <= BEX(147); 
-	
-	
+
+    MemToReg    <= BEX(151 downto 150);
+    RegWrite    <= BEX(149);
+    MemWrite    <= BEX(148);
+    MemRead_ex  <= BEX(147);
+    AluSrc      <= BEX(146);
+    Aluop       <= BEX(145 downto 143);
+    rd_ex       <= BEX(142 downto 138);
+    rs2_ex      <= BEX(137 downto 133);
+    rs1_ex      <= BEX(132 downto 128);
+    PC_plus4    <= BEX(127 downto 096);
+    Imed        <= BEX(095 downto 064);
+    RB          <= BEX(063 downto 032);
+    RA          <= BEX(031 downto 000);
+
+    
 	-- Muxs
 	mux_immem : process(ALUsrc, BEX)
 	begin
 		if (ALUsrc = '1') then 
-			mux_immem_out <= BEX(95 downto 64); -- Imem_id
+			mux_immem_out <= Imed; -- Imem_id
 		else
 			mux_immem_out <= muxB_out; --RB_id
 		end if;
@@ -95,15 +117,31 @@ begin
 	mux_forwardA : process(BEX, forwardA, ula_mem,memval_mem,writedata_wb)
 	begin
 		case forwardA is
-			when "00" =>
+			when "00" => 
+                muxA_out <= RA;
 			when "01" => 
-			when "10" =>
-			when "11" =>
+                muxA_out <= WriteData_wb;
+			when "10" => 
+                muxA_out <= MemVal_mem;
+			when "11" => 
+                muxA_out <= MemVal_mem;
+
 		end case;
 	end process;
 
-	mux_forwardB : process(...)
+	mux_forwardB : process(BEX, forwardB, ula_mem,memval_mem,writedata_wb)
 	begin
+        case forwardB is
+			when "00" => 
+                muxB_out <= RB;
+			when "01" => 
+                muxB_out <= WriteData_wb;
+			when "10" => 
+                muxB_out <= MemVal_mem;
+			when "11" => 
+                muxB_out <= MemVal_mem;
+
+		end case;
 	end process;
 
 	--ULA
