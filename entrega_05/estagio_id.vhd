@@ -179,7 +179,7 @@ begin
 			else
 				invalid_instr <= '1';
 			end if;
-		when "1101111" => -- Branch and link
+		when "1101111" => -- Jal
 			rs1_bool <= '0';
 			rs2_bool <= '0';
 			 immext <= (31 downto 20 => BID(31)) & BID(19 downto 12) & BID(20) & BID(30 downto 21) & '0';
@@ -286,7 +286,7 @@ begin
 
 	-- Hazard Detection Unit
 	process(MemRead_ex, MemRead_mem, rd_ex,rd_mem,rs1,rs2,rs1_bool,rs2_bool) begin
-	if (MemRead_ex = '1' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
+	if (MemRead_ex = '1' and MemWrite_id = '0' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
 		id_hd_hazard <= '1';
 		stallD <= '1';
 	elsif (MemRead_mem = '1' and ((rd_mem = rs1 and rs1_bool = '1') or (rd_mem = rs2 and rs2_bool = '1')) and (rd_mem/="00000")) then
