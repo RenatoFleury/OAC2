@@ -120,7 +120,7 @@ begin
 		end if;
 	end process;
 
-	mux_forwardA : process(BEX, forwardA, ula_mem,memval_mem,writedata_wb,RA)
+	mux_forwardA : process(BEX, forwardA, ula_mem,writedata_wb,RA)
 	begin
 		case forwardA is
 			when "00" => 
@@ -128,7 +128,7 @@ begin
 			when "01" => 
                 muxA_out <= WriteData_wb;
 			when "10" => 
-                muxA_out <= MemVal_mem;
+                muxA_out <= RA; -- grupo decidiu por não usar sinal memval_mem
 			when "11" => 
                 muxA_out <= ula_mem;
 			when others =>
@@ -137,7 +137,7 @@ begin
 		end case;
 	end process;
 
-	mux_forwardB : process(BEX, forwardB, ula_mem,memval_mem,writedata_wb,RB)
+	mux_forwardB : process(BEX, forwardB, ula_mem,writedata_wb,RB)
 	begin
         case forwardB is
 			when "00" => 
@@ -145,12 +145,11 @@ begin
 			when "01" => 
                 muxB_out <= WriteData_wb;
 			when "10" => 
-                muxB_out <= MemVal_mem;
+                muxB_out <= RB; -- grupo decidiu por não usar o sinal memval_mem
 			when "11" => 
                 muxB_out <= ula_mem;
 			when others =>
 				muxB_out <= RB;
-
 		end case;
 	end process;
 
@@ -162,7 +161,7 @@ begin
 	begin
 		if (rd_wb = rs1_ex and regwrite_wb = '1') then
 		    forwardA <= "01";
-		elsif(rd_mem = rs1_ex and (memread_mem = '1' and regwrite_mem = '1')) then
+		elsif(rd_mem = rs1_ex and (memread_mem = '1' and regwrite_mem = '1')) then -- caso usassemos o memval_mem
 		    forwardA <= "10";
 		elsif(rd_mem = rs1_ex and (memread_mem = '0' and regwrite_mem = '1')) then
 		    forwardA <= "11";

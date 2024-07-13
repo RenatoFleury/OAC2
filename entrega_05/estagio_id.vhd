@@ -208,7 +208,7 @@ begin
 			 end if;
 		when others =>
 			 invalid_instr <= '1';
-			 is_jump <= '1';
+			 is_jump <= '0';
 
 		end case;
 	end process;
