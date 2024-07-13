@@ -205,12 +205,10 @@ begin
 	begin
 		if(rising_edge(clock)) then
 			MemtoReg_mem <= MemToReg;
-			debug_BMEM <= MemtoReg_mem & RegWrite & MemWrite & MemRead & PC_plus4 & ula_ex & muxB_out & rs1_ex & rs2_ex & rd;
 			BMEM <= MemtoReg_mem & RegWrite & MemWrite & MemRead & PC_plus4 & ula_ex & muxB_out & rs1_ex & rs2_ex & rd;
 			COP_mem <= COP_EX;
 		else
 			MemtoReg_mem <= MemtoReg_mem;
-			debug_BMEM <= debug_BMEM;
 			BMEM <= BMEM;
 			COP_mem <= COP_mem;
 		end if;

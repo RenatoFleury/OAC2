@@ -291,7 +291,7 @@ begin
 
 	-- Hazard Detection Unit
 	process(MemRead_ex, MemRead_mem, rd_ex,rd_mem,rs1,rs2,rs1_bool,rs2_bool) begin
-	if (MemRead_ex = '1' and MemWrite_id = '0' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
+	if (MemRead_ex = '1' and ((rd_ex = rs1 and rs1_bool = '1') or (rd_ex = rs2 and rs2_bool = '1')) and (rd_ex/="00000")) then
 		id_hd_hazard <= '1';
 		stallD <= '1';
 	elsif (MemRead_mem = '1'and is_jump = '1' and ((rd_mem = rs1 and rs1_bool = '1') or (rd_mem = rs2 and rs2_bool = '1')) and (rd_mem/="00000")) then
@@ -340,7 +340,7 @@ begin
 	process(clock) begin
 		if(rising_edge(clock) and StallD = '1') then
 			BEX <=MemtoReg_id & '0' & '0' & '0' & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id;
-			instrEx<= BID(31 downto 0);
+			instrEx<= x"00000000";
 		elsif(rising_edge(clock) and StallD = '0') then
 			BEX <= MemtoReg_id & RegWrite_id & MemWrite_id & MemRead_id & AluSrcD & AluOP & rd & rs2 & rs1 & PC_plus4 & immext & RB_id & RA_id; 
 			instrEx<= BID(31 downto 0);
