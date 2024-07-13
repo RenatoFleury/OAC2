@@ -40,7 +40,7 @@ package body tipos is
 
 			if (func7 = "0000000" and func3 = "000" and opcode = "0110011") then
 				instruction_type_return := ADD;    
-			elsif (func7 = "0000000" and func3 = "000" and opcode = "0110011") then
+			elsif (func7 = "0000000" and func3 = "010" and opcode = "0110011") then
 				instruction_type_return := SLT;    
 			elsif (func3 = "000" and opcode = "0010011") then
 				instruction_type_return := ADDI;   
