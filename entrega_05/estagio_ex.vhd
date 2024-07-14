@@ -180,9 +180,9 @@ begin
 		end if;
 
 	--inserir logica ex_fw_a_branch
-		if (rs1_id_ex = rd_ex and RegWrite = '1') then
+		if (rs1_id_ex = rd_ex and RegWrite = '1' and MemToReg = "00") then
 			ex_fw_A_Branch <= "10";
-		elsif(rs1_id_ex = rd_mem and regwrite_mem = '1') then
+		elsif(rs1_id_ex = rd_mem and regwrite_mem = '1' and MemtoReg_mem = "00") then
 			ex_fw_A_Branch <= "01";
 		elsif(rs1_id_ex = rd_mem and MemtoReg_mem = "10") then
 			ex_fw_A_Branch <= "11";
@@ -190,9 +190,9 @@ begin
 			ex_fw_A_Branch <= "00";
 		end if;
 
-		if (rs2_id_ex = rd_ex and RegWrite = '1') then
+		if (rs2_id_ex = rd_ex and RegWrite = '1' and MemToReg = "00") then
 			ex_fw_B_Branch <= "10";
-		elsif(rs2_id_ex = rd_mem and regwrite_mem = '1') then
+		elsif(rs2_id_ex = rd_mem and regwrite_mem = '1'and MemtoReg_mem = "00") then
 			ex_fw_B_Branch <= "01";
 		elsif(rs2_id_ex = rd_mem and MemtoReg_mem = "10") then
 			ex_fw_B_Branch <= "11";
