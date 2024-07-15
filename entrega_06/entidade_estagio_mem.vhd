@@ -7,34 +7,85 @@ use ieee.std_logic_1164.all;
 library work;
 use work.tipos.all;	
 
--- O estágio de memória é responsável por implementar os acessos a memória de dados nas 
--- instruç±oes de load e Store.
--- Nas demais instruç±oes este estágio nao realiza nenhuma operaçao e passa simplesmente 
--- os dados recebidos para o estágio wb de forma a viabilizar
--- o armazenamento das informaçoes nos registradores do Banco de registradores.
--- Os sinais de entrada e saída deste estágio encontram-se definidos na declaraçao da 
+-- O estï¿½gio de memï¿½ria ï¿½ responsï¿½vel por implementar os acessos a memï¿½ria de dados nas 
+-- instruï¿½oes de load e Store.
+-- Nas demais instruï¿½oes este estï¿½gio nao realiza nenhuma operaï¿½ao e passa simplesmente 
+-- os dados recebidos para o estï¿½gio wb de forma a viabilizar
+-- o armazenamento das informaï¿½oes nos registradores do Banco de registradores.
+-- Os sinais de entrada e saï¿½da deste estï¿½gio encontram-se definidos na declaraï¿½ao da 
 -- entidade estagio_mem.
 
 entity estagio_mem is
     generic(
-        dmem_init_file: string := "dmem.txt"		  		-- Arquivo inicializar a memória de dados
+        dmem_init_file: string := "dmem.txt"		  		-- Arquivo inicializar a memï¿½ria de dados
     );
     port(
 		-- Entradas
 		clock		: in std_logic;						 	-- Base de tempo
-        BMEM		: in std_logic_vector(115 downto 0); 	-- Informaçoes vindas do estágio ex
-		COP_mem		: in instruction_type;					-- Mnemônico sendo processada no estágio mem
+        BMEM		: in std_logic_vector(115 downto 0); 	-- Informaï¿½oes vindas do estï¿½gio ex
+		COP_mem		: in instruction_type;					-- Mnemï¿½nico sendo processada no estï¿½gio mem
 		
-		-- Saídas
-        BWB			: out std_logic_vector(103 downto 0) := (others => '0');-- Informaçoes para o wb
-		COP_wb 		: out instruction_type := NOP;			-- Mnemônico a ser processada pelo estágio wb
-		RegWrite_mem: out std_logic;						-- Escrita em regs no estágio mem
-		MemRead_mem	: out std_logic;						-- Leitura da memória no estágio mem 
-		MemWrite_mem: out std_logic;						-- Escrita na memoria de dados no estágio mem
+		-- Saï¿½das
+        BWB			: out std_logic_vector(103 downto 0) := (others => '0');-- Informaï¿½oes para o wb
+		COP_wb 		: out instruction_type := NOP;			-- Mnemï¿½nico a ser processada pelo estï¿½gio wb
+		RegWrite_mem: out std_logic;						-- Escrita em regs no estï¿½gio mem
+		MemRead_mem	: out std_logic;						-- Leitura da memï¿½ria no estï¿½gio mem 
+		MemWrite_mem: out std_logic;						-- Escrita na memoria de dados no estï¿½gio mem
 		rd_mem		: out std_logic_vector(004 downto 0);	-- Destino nos regs. no estagio mem
-		ula_mem		: out std_logic_vector(031 downto 0);	-- ULA no estágo mem para o estágio mem
+		ula_mem		: out std_logic_vector(031 downto 0);	-- ULA no estï¿½go mem para o estï¿½gio mem
 		NPC_mem		: out std_logic_vector(031 downto 0);	-- Valor do NPC no estagio mem
-		Memval_mem	: out std_Logic_vector(031 downto 0)	-- Saida da memória no estágio mem
+		Memval_mem	: out std_Logic_vector(031 downto 0)	-- Saida da memï¿½ria no estï¿½gio mem
 		
     );
 end entity;
+
+architecture behavioral of estagio_mem is
+	component data_ram is	 -- Esta ï¿½ a memï¿½ria de dados -dmem
+		generic(
+			address_bits		: integer 	:= 32;		  -- Bits de end. da memï¿½ria de dados
+			size				: integer 	:= 4099;	  -- Tamanho da memï¿½ria de dados em Bytes
+			data_ram_init_file	: string 	:= "dmem.txt" -- Arquivo da memï¿½ria de dados
+		);
+		port (
+			-- Entradas
+			clock 		: in  std_logic;							    -- Base de tempo bancada de teste
+			write 		: in  std_logic;								-- Sinal de escrita na memï¿½ria
+			address 	: in  std_logic_vector(address_bits-1 downto 0);-- Entrada de endereï¿½o da memï¿½ria
+			data_in 	: in  std_logic_vector(address_bits-1 downto 0);-- Entrada de dados da memï¿½ria
+			
+			-- Saï¿½da
+			data_out 	: out std_logic_vector(address_bits-1 downto 0)	-- Saï¿½da de dados da memï¿½ria
+		);
+	end component;
+	
+	signal MemWrite : std_logic := '0';
+	signal dado_arma_ex,ula_ex,data_out : std_logic_vector(31 downto 0) := (others => '0');
+	signal MemToReg_mem : std_logic_vector(1 downto 0) := (others => '0');
+	
+
+begin
+
+	dado_arma_ex <= BMEM(46 downto 15);
+	MemToReg_mem <= BMEM(115 downto 114);
+
+	NPC_mem <= BMEM(110 downto 079);
+	ula_mem <= BMEM(78 downto 47);
+	rd_mem <= BMEM(4 downto 0);
+	MemWrite_mem <= BMEM(112);
+	MemRead_mem <= BMEM(111);
+	RegWrite_mem <= BMEM(113);
+
+	data_memory : data_ram port map(clock,MemWrite_mem,ula_mem,dado_arma_ex,data_out);
+	memval_mem <= data_out;
+
+	reg_BWB : process(clock)
+		if (rising_edge(clock)) then
+			BWB <= MemToReg_mem & RegWrite_mem & NPC_mem & ula_mem & memval_mem & rd_mem;
+			COP_wb <= COP_mem;
+		else
+			BWB <= BWB;
+			COP_wb <= COP_mem;
+		end if;
+	end process;
+
+end architecture;

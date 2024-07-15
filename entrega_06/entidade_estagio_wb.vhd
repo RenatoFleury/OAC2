@@ -7,22 +7,46 @@ use ieee.std_logic_1164.all;
 library work;
 use work.tipos.all;	
 
--- Especificaç±ao do estágio WRITE-BACK - wb: Declaraçao de entidade
--- Este estágio  seleciona a informaç±ao que deve ser gravada nos registradores, 
--- cuja gravaçao será executada no estágio id
--- Os sinais de entrada e saída deste estágio encontram-es definidos nos comentários 
--- da declaraç±ao de entidade estagio_wb.
+-- Especificaï¿½ao do estï¿½gio WRITE-BACK - wb: Declaraï¿½ao de entidade
+-- Este estï¿½gio  seleciona a informaï¿½ao que deve ser gravada nos registradores, 
+-- cuja gravaï¿½ao serï¿½ executada no estï¿½gio id
+-- Os sinais de entrada e saï¿½da deste estï¿½gio encontram-es definidos nos comentï¿½rios 
+-- da declaraï¿½ao de entidade estagio_wb.
 
 
 entity estagio_wb is
     port(
 		-- Entradas
-        BWB				: in std_logic_vector(103 downto 0); -- Informaçoes vindas do estagi mem
-		COP_wb			: in instruction_type := NOP;		 -- Mnemônico da instruçao no estagio wb
+        BWB				: in std_logic_vector(103 downto 0); -- Informaï¿½oes vindas do estagi mem
+		COP_wb			: in instruction_type := NOP;		 -- Mnemï¿½nico da instruï¿½ao no estagio wb
 		
-		-- Saídas
+		-- Saï¿½das
         writedata_wb	: out std_logic_vector(31 downto 0); -- Valor a ser escrito emregistradores
-        rd_wb			: out std_logic_vector(04 downto 0); -- Endereço do registrador a ser escrito
+        rd_wb			: out std_logic_vector(04 downto 0); -- Endereï¿½o do registrador a ser escrito
 		RegWrite_wb		: out std_logic						 -- Sinal de escrita nos registradores
     );
 end entity;
+
+architecture behavioral of estagio_wb is
+    signal memval_wb,NPC_wb,ula_wb : std_logic_vector(31 downto 0) := (others => '0');
+    signal MemToReg_wb : std_logic_vector(1 downto 0) := (others => '0');
+    
+begin
+    rd_wb <= BWB(4 downto 0);
+    RegWrite_wb <= BWB(101);
+
+    MemToReg_wb <= BWB(103 downto 102)
+    NPC_wb <= BWB(100 downto 69);
+    ula_wb <= BWB(68 downto 37);
+    memval_wb <= BWB(36 downto 5);
+
+    mux_wb : process(NPC_wb,ula_wb,memval_wb,MemToReg_wb)
+        if (MemToReg_wb = "10") then
+            writedata_wb <= NPC_wb;
+        elsif(MemToReg_wb = "01") then
+            writedata_wb <= memval_wb;
+        else
+            write_data_wb <= ula_wb;
+        end if;
+    end process;
+end architecture;
