@@ -20,7 +20,7 @@ use work.tipos.all;
 -- A definiç±ao do sinais de entrada e saída do estágio EX encontram-se na declaraçao 
 -- da entidade estágio_ex e sao passados pelo registrador BEX
 
-entity estagio_ex is
+entity estagio_ex_grupo_09 is
     port(
 		-- Entradas
 		clock				: in 	std_logic;					  		-- Relógio do Sistema
@@ -51,7 +51,7 @@ entity estagio_ex is
 		);
 end entity;
 
-architecture behavioral of estagio_ex is
+architecture behavioral of estagio_ex_grupo_09 is
 	
 component alu is
     port(

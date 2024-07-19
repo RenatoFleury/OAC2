@@ -10,7 +10,7 @@ use std.env.stop;
 library work;
 use work.tipos.all;
 
-entity estagio_if is
+entity estagio_if_grupo_09 is
     generic(
         imem_init_file: string := "imem.txt"	
     );
@@ -27,7 +27,7 @@ entity estagio_if is
         		BID		: out 	std_logic_vector(63 downto 0) := x"0000000000000000");
 end entity;
 
-architecture behavioral of estagio_if is
+architecture behavioral of estagio_if_grupo_09 is
 	component ram is
 		generic(
 			address_bits : integer;
@@ -54,35 +54,6 @@ begin
 	
 	PC_plus_4 <= std_logic_vector(unsigned(PC_if) + 4);
 	COP_if <= get_instruction_type(ri_if);
-
-	-- PROCESS_IF_PC: process (clock,id_PC_Src,id_Jump_PC,id_branch_nop,id_hd_hazard,PC_plus_4,data_out)
-	-- begin
-	-- 		if (id_PC_Src = '1') then
-	-- 			PC_selected <= id_Jump_PC;
-	-- 		elsif (id_PC_Src = '0') then 
-	-- 			PC_selected <=  PC_plus_4;
-	-- 		end if;
-
-	-- 		if (id_branch_nop='1') then 
-	-- 			ri_if <= x"00001013";
-	-- 		elsif (id_branch_nop='0') then
-	-- 			ri_iF <= data_out;
-	-- 		end if;
-
-	-- 		if (rising_edge(clock)) then
-	-- 			if (id_hd_hazard = '0') then
-	-- 				BID(63 downto 32) <= PC_if;
-	-- 				BID(31 downto  0) <= ri_if;
-	-- 			end if;
-				
-	-- 			if (id_hd_hazard = '1' or halt_sig = '1') then
-	-- 				PC_if <= PC_if;
-	-- 			else
-	-- 				PC_if <= PC_selected;
-	-- 			end if;
-	-- 		end if;
-	-- end process;
-
 	
 	PROCESS_MUX_1: process (id_PC_Src,id_Jump_PC,PC_plus_4)
 	begin
