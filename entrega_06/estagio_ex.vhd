@@ -205,7 +205,7 @@ begin
 	begin
 		if(rising_edge(clock)) then
 			MemtoReg_mem <= MemToReg;
-			BMEM <= MemtoReg_mem & RegWrite & MemWrite & MemRead & PC_plus4 & ula_ex & muxB_out & rs1_ex & rs2_ex & rd;
+			BMEM <= MemtoReg & RegWrite & MemWrite & MemRead & PC_plus4 & ula_ex & muxB_out & rs1_ex & rs2_ex & rd;
 			COP_mem <= COP_EX;
 		else
 			MemtoReg_mem <= MemtoReg_mem;

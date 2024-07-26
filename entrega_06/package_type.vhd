@@ -60,7 +60,7 @@ package body tipos is
 				instruction_type_return := BEQ;    
 			elsif (func3 = "001" and opcode = "1100011") then ------------------------ VERIFICAR func3
 				instruction_type_return := BNE;    
-			elsif (func3 = "010" and opcode = "1100011") then ------------------------ VERIFICAR func3
+			elsif (func3 = "100" and opcode = "1100011") then ------------------------ VERIFICAR func3
 				instruction_type_return := BLT;
 			elsif (instruction=x"0000006f") then
 				instruction_type_return := HALT;
