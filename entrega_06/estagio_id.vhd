@@ -156,6 +156,7 @@ begin
 			rs1_bool <= '1';
 			rs2_bool <= '0';
 			is_jump <= '0';
+			ALUOP <= "000";
 			immext <= (31 downto 12 => BID(31)) & BID(31 downto 20);
 			if (funct3 = "010") then
 				invalid_instr <= '0';
@@ -304,7 +305,7 @@ begin
 	end process;
 
 	--Forwarding
-	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem, NPC_mem, rs1_bool, is_jump) begin
+	process(ex_fw_A_Branch, data_out_a,ula_ex,ula_mem, NPC_mem, rs1_bool, is_jump,clock) begin
 		if(is_jump = '1' and rs1_bool = '1') then
 			if (ex_fw_A_Branch = "01") then 
 				RA_id <= ula_mem;
@@ -320,7 +321,7 @@ begin
 		end if;
 	end process;
 
-	process(ex_fw_B_Branch, data_out_b,ula_ex,ula_mem,NPC_mem,rs2_bool,is_jump) begin
+	process(ex_fw_B_Branch, data_out_b,ula_ex,ula_mem,NPC_mem,rs2_bool,is_jump,clock) begin
 		if(is_jump = '1' and rs2_bool = '1') then
 			if (ex_fw_B_Branch = "01") then 
 				RB_id <= ula_mem;

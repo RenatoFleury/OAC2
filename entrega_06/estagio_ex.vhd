@@ -157,7 +157,7 @@ begin
 	ULA : alu port map(muxA_out,mux_immem_out,ALUop, ULA_out, zero);
 
 	--Forwarding Unit pode adiantar valores da ula_mem, memval_mem, writedata_wb, condicionais sendo memread_mem, regwrite_mem, regwrite_wb
-	Forwarding_Unit : process(rd_wb,rd_mem,BEX,regwrite_wb,memread_mem,regwrite_mem)	
+	Forwarding_Unit : process(clock,rd_wb,rd_mem,BEX,regwrite_wb,memread_mem,regwrite_mem,rs1_id_ex,rs2_id_ex,RegWrite,MemtoReg,rd_ex)	
 	begin
 		if (rd_wb = rs1_ex and regwrite_wb = '1') then
 		    forwardA <= "01";
@@ -180,7 +180,7 @@ begin
 		end if;
 
 	--inserir logica ex_fw_a_branch
-		if (rs1_id_ex = rd_ex and RegWrite = '1' and MemToReg = "00") then
+		if (to_integer(signed(rs1_id_ex)) = to_integer(signed(rd_ex)) and RegWrite = '1' and MemToReg = "00") then
 			ex_fw_A_Branch <= "10";
 		elsif(rs1_id_ex = rd_mem and regwrite_mem = '1' and MemtoReg_mem = "00") then
 			ex_fw_A_Branch <= "01";
