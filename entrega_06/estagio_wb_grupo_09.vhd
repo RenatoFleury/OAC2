@@ -14,7 +14,7 @@ use work.tipos.all;
 -- da declara�ao de entidade estagio_wb.
 
 
-entity estagio_wb is
+entity estagio_wb_grupo_09 is
     port(
 		-- Entradas
         BWB				: in std_logic_vector(103 downto 0); -- Informa�oes vindas do estagi mem
@@ -27,7 +27,7 @@ entity estagio_wb is
     );
 end entity;
 
-architecture behavioral of estagio_wb is
+architecture behavioral of estagio_wb_grupo_09 is
     signal memval_wb,NPC_wb,ula_wb : std_logic_vector(31 downto 0) := (others => '0');
     signal MemToReg_wb : std_logic_vector(1 downto 0) := (others => '0');
     
@@ -35,18 +35,18 @@ begin
     rd_wb <= BWB(4 downto 0);
     RegWrite_wb <= BWB(101);
 
-    MemToReg_wb <= BWB(103 downto 102)
+    MemToReg_wb <= BWB(103 downto 102);
     NPC_wb <= BWB(100 downto 69);
     ula_wb <= BWB(68 downto 37);
     memval_wb <= BWB(36 downto 5);
 
-    mux_wb : process(NPC_wb,ula_wb,memval_wb,MemToReg_wb)
+    mux_wb : process(NPC_wb,ula_wb,memval_wb,MemToReg_wb) begin
         if (MemToReg_wb = "10") then
             writedata_wb <= NPC_wb;
         elsif(MemToReg_wb = "01") then
             writedata_wb <= memval_wb;
         else
-            write_data_wb <= ula_wb;
+            writedata_wb <= ula_wb;
         end if;
     end process;
 end architecture;

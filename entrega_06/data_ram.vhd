@@ -8,29 +8,29 @@ use ieee.math_real.all;
 use ieee.numeric_std.all;
 use std.textio.all;
 
-entity data_ram is	 -- Esta é a memória de dados -dmem
+entity data_ram is	 -- Esta ï¿½ a memï¿½ria de dados -dmem
     generic(
-        address_bits		: integer 	:= 32;		  -- Bits de end. da memória de dados
-        size				: integer 	:= 4099;	  -- Tamanho da memória de dados em Bytes
-        data_ram_init_file	: string 	:= "dmem.txt" -- Arquivo da memória de dados
+        address_bits		: integer 	:= 32;		  -- Bits de end. da memï¿½ria de dados
+        size				: integer 	:= 4099;	  -- Tamanho da memï¿½ria de dados em Bytes
+        data_ram_init_file	: string 	:= "dmem.txt" -- Arquivo da memï¿½ria de dados
     );
     port (
 		-- Entradas
 		clock 		: in  std_logic;							    -- Base de tempo bancada de teste
-        write 		: in  std_logic;								-- Sinal de escrita na memória
-        address 	: in  std_logic_vector(address_bits-1 downto 0);-- Entrada de endereço da memória
-        data_in 	: in  std_logic_vector(address_bits-1 downto 0);-- Entrada de dados da memória
+        write 		: in  std_logic;								-- Sinal de escrita na memï¿½ria
+        address 	: in  std_logic_vector(address_bits-1 downto 0);-- Entrada de endereï¿½o da memï¿½ria
+        data_in 	: in  std_logic_vector(address_bits-1 downto 0);-- Entrada de dados da memï¿½ria
 		
-		-- Saída
-        data_out 	: out std_logic_vector(address_bits-1 downto 0)	-- Saída de dados da memória
+		-- Saï¿½da
+        data_out 	: out std_logic_vector(address_bits-1 downto 0)	-- Saï¿½da de dados da memï¿½ria
     );
 end entity data_ram;
 
 architecture data_ram_arch of data_ram is
-	-- Definiçao do tipo de dado para declarar a memória RAM - Cache de Dados - dmem
+	-- Definiï¿½ao do tipo de dado para declarar a memï¿½ria RAM - Cache de Dados - dmem
     type memory_type is array(size-1 downto 0) of std_logic_vector(7 downto 0);
 
-    --Rotina que inicializa o conteúdo da memória de dados; arquivo de texto com binário
+    --Rotina que inicializa o conteï¿½do da memï¿½ria de dados; arquivo de texto com binï¿½rio
     impure function data_ram_init(file_name: string) return memory_type is
         file file_handle		: text open read_mode is file_name;
         variable current_line	: line;
@@ -59,14 +59,14 @@ architecture data_ram_arch of data_ram is
         return data_ram;
     end function;
 	
-	-- Sinais internos ao módulo
+	-- Sinais internos ao mï¿½dulo
     signal data_memory		: memory_type := data_ram_init(data_ram_init_file);
     signal address_formatted: std_logic_vector(11 downto 0); 
 	
 begin
-    process(clock) is -- Processo que implementa a lógica da memória RAM
+    process(clock) is -- Processo que implementa a lï¿½gica da memï¿½ria RAM
     begin
-        if rising_edge(clock) then	-- Escrita na memória de dados é síncrona com o relógio
+        if rising_edge(clock) then	-- Escrita na memï¿½ria de dados ï¿½ sï¿½ncrona com o relï¿½gio
             if write = '1' then
                 data_memory(to_integer(unsigned(address_formatted)))	<=	data_in(31 downto 24);
                 data_memory(to_integer(unsigned(address_formatted))+1)	<=	data_in(23 downto 16);
@@ -76,13 +76,12 @@ begin
         end if;
     end process;
 	
-	-- A leitura da memória de dados é assíncrona
+	-- A leitura da memï¿½ria de dados ï¿½ assï¿½ncrona
     data_out(31 downto 24) 	<= data_memory(to_integer(unsigned(address_formatted)));
     data_out(23 downto 16) 	<= data_memory(to_integer(unsigned(address_formatted))+1);
     data_out(15 downto 08) 	<= data_memory(to_integer(unsigned(address_formatted))+2);
     data_out(07 downto 00) 	<= data_memory(to_integer(unsigned(address_formatted))+3);
 
-    address_formatted <= address(11 downto 0);-- Limitando o número de bits de endereço(12)
+    address_formatted <= address(11 downto 0);-- Limitando o nï¿½mero de bits de endereï¿½o(12)
 	
 end architecture data_ram_arch;
-

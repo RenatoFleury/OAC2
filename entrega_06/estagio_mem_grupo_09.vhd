@@ -15,7 +15,7 @@ use work.tipos.all;
 -- Os sinais de entrada e sa�da deste est�gio encontram-se definidos na declara�ao da 
 -- entidade estagio_mem.
 
-entity estagio_mem is
+entity estagio_mem_grupo_09 is
     generic(
         dmem_init_file: string := "dmem.txt"		  		-- Arquivo inicializar a mem�ria de dados
     );
@@ -39,7 +39,7 @@ entity estagio_mem is
     );
 end entity;
 
-architecture behavioral of estagio_mem is
+architecture behavioral of estagio_mem_grupo_09 is
 	component data_ram is	 -- Esta � a mem�ria de dados -dmem
 		generic(
 			address_bits		: integer 	:= 32;		  -- Bits de end. da mem�ria de dados
@@ -78,13 +78,13 @@ begin
 	data_memory : data_ram port map(clock,MemWrite_mem,ula_mem,dado_arma_ex,data_out);
 	memval_mem <= data_out;
 
-	reg_BWB : process(clock)
+	reg_BWB : process(clock) begin
 		if (rising_edge(clock)) then
 			BWB <= MemToReg_mem & RegWrite_mem & NPC_mem & ula_mem & memval_mem & rd_mem;
 			COP_wb <= COP_mem;
 		else
 			BWB <= BWB;
-			COP_wb <= COP_mem;
+			COP_wb <= COP_wb;
 		end if;
 	end process;
 

@@ -6,7 +6,7 @@ use IEEE.NUMERIC_STD.ALL;
 library work;
 use work.tipos.all;
 
-entity estagio_id is
+entity estagio_id_grupo_09 is
     port(
 		-- Entradas
 		clock               : in	std_logic;                       -- Base de tempo- bancada de teste
@@ -38,7 +38,7 @@ entity estagio_id is
     );
 end entity;
 
-architecture behavioral of estagio_id is
+architecture behavioral of estagio_id_grupo_09 is
 
     component regfile is
     port(

@@ -10,7 +10,7 @@ use std.env.stop;
 library work;
 use work.tipos.all;
 
-entity estagio_if is
+entity estagio_if_grupo_09 is
     generic(
         imem_init_file: string := "imem.txt"	
     );
@@ -27,7 +27,7 @@ entity estagio_if is
         		BID		: out 	std_logic_vector(63 downto 0) := x"0000000000000000");
 end entity;
 
-architecture behavioral of estagio_if is
+architecture behavioral of estagio_if_grupo_09 is
 	component ram is
 		generic(
 			address_bits : integer;
